@@ -6,11 +6,13 @@
 import sys
 import pandas as pd 
 import numpy as np 
+import folium 
+from folium.plugins import minimap 
 from serial_mod.serial_mod import PuertoDisponible, ColorTab
 from PySide6.QtCore import QSize, QIODevice 
 from PySide6.QtSerialPort import QSerialPortInfo, QSerialPort
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
-from PySide6.QtWidgets import QLayout, QMainWindow, QApplication, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QWidget
+from PySide6.QtWidgets import QMainWindow, QApplication, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QWidget
 # USAR threading para actualizar el puerto serial 
 
 class MainWindow(QMainWindow): 
@@ -56,9 +58,14 @@ class MainWindow(QMainWindow):
         self.pack_label.setAlignment(Qt.AlignCenter)
         self.pack_label.setGeometry(3,3,198,27)
         self.hora = QLabel(self.frame_data)
+        self.hora.setAlignment(Qt.AlignCenter)
         self.id = QLabel(self.frame_data)
+        self.id.setAlignment(Qt.AlignCenter)
         self.launcht = QLabel(self.frame_data)
+        self.launcht.setAlignment(Qt.AlignCenter)
         self.pack = QLabel(self.frame_data)
+        self.pack.setAlignment(Qt.AlignCenter)
+
 
         # Cuadro con las señales recibidas de los sensores. 
         self.frame_sensores = QFrame(self)
@@ -242,6 +249,11 @@ class MainWindow(QMainWindow):
                     except: 
                         pass 
             self.df.loc[len(self.df.index)] = new_row 
+            self.hora.setText(f"{self.df.iloc[len(self.df.index) - 1]['Hora']}")
+            self.id.setText(f"{self.df.iloc[len(self.df.index) - 1]['ID']}")
+            self.pack.setText(f"{self.df.iloc[len(self.df.index) - 1]['Packet Count']}")
+            self.launcht.setText(f"{self.df.iloc[len(self.df.index) - 1]['Mission Time']}")
+
         except:
             pass
 

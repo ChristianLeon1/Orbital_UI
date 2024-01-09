@@ -20,8 +20,10 @@ for i in range(0,100):
         a.append(f'0:00:0{i}')
     elif 10 <= i and i <60: 
         a.append(f'0:00:{i}')
-    elif 60 <= i: 
+    elif 60 <= i and i < 70: 
         a.append(f'0:01:0{i-60}')
+    else: 
+        a.append(f'0:02:{i-60}')
     #Packet Count
     a.append(i + 1)
     #Altitud
@@ -47,8 +49,10 @@ for i in range(0,100):
         a.append(f'11:29:0{i}')
     elif 10 <= i and i <60: 
         a.append(f'11:29:{i}')
-    elif 60 <= i: 
+    elif 60 <= i and i < 70: 
         a.append(f'11:30:0{i-60}')
+    else: 
+        a.append(f'11:30:{i-60}')  
     #Latitud
     a.append(round(random.uniform(18,19),4))
     #Longitud
