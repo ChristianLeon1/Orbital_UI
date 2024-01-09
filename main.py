@@ -9,7 +9,7 @@ import numpy as np
 from serial_mod.serial_mod import PuertoDisponible, ColorTab
 from PySide6.QtCore import QSize, QIODevice 
 from PySide6.QtSerialPort import QSerialPortInfo, QSerialPort
-from PySide6.QtGui import QAction, QKeySequence, QResizeEvent
+from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QLayout, QMainWindow, QApplication, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QWidget
 # USAR threading para actualizar el puerto serial 
 
@@ -35,13 +35,30 @@ class MainWindow(QMainWindow):
 
         # Cuadro con identificadores de la misión. 
         self.frame_data = QFrame(self)
-        self.hora_frame = QFrame(self.frame_data) # self.frame_data)
+        self.hora_frame = QFrame(self.frame_data) 
+        self.id_frame = QFrame(self.frame_data)
         self.launcht_frame = QFrame(self.frame_data)
         self.pack_frame = QFrame(self.frame_data)
-        self.data_layout = QLayout(self.frame_data)
-        self.
-        self.hora_frame.setStyleSheet("background-color: white;")
-        self.pack_frame = QFrame(self.frame_data)
+        self.hora_label = QLabel(self.hora_frame)
+        self.hora_label.setText("HORA")
+        self.hora_label.setAlignment(Qt.AlignCenter) 
+        self.hora_label.setGeometry(3,3,198,27)
+        self.id_label = QLabel(self.id_frame)
+        self.id_label.setText("ID")
+        self.id_label.setAlignment(Qt.AlignCenter)
+        self.id_label.setGeometry(3,3,198,27)
+        self.launcht_label = QLabel(self.launcht_frame)
+        self.launcht_label.setText("LAUNCH TIME")
+        self.launcht_label.setAlignment(Qt.AlignCenter)
+        self.launcht_label.setGeometry(3,3,198,27)
+        self.pack_label = QLabel(self.pack_frame) 
+        self.pack_label.setText("PACK COUNT")
+        self.pack_label.setAlignment(Qt.AlignCenter)
+        self.pack_label.setGeometry(3,3,198,27)
+        self.hora = QLabel(self.frame_data)
+        self.id = QLabel(self.frame_data)
+        self.launcht = QLabel(self.frame_data)
+        self.pack = QLabel(self.frame_data)
 
         # Cuadro con las señales recibidas de los sensores. 
         self.frame_sensores = QFrame(self)
@@ -52,10 +69,43 @@ class MainWindow(QMainWindow):
         self.tab_cont.addTab(self.tab_GPS,"GPS")
         self.tab_cont.setStyleSheet(ColorTab())
 
-        self.frame_data.setStyleSheet("background-color: #242424;"
-                                    "border: 1px 022466;"
-                                    "border-radius: 5px;")
-        self.frame_sensores.setStyleSheet("background-color: #242424;"
+        self.frame_data.setStyleSheet("background: #151515;"
+                                    "border: 1px;"
+                                    "border-radius: 5px;") 
+        self.hora_frame.setStyleSheet("background: #00BDFF;") 
+        self.id_frame.setStyleSheet("background: #00BDFF;")
+        self.launcht_frame.setStyleSheet("background: #00BDFF;")
+        self.pack_frame.setStyleSheet("background: #00BDFF;")
+        self.hora_label.setStyleSheet("background: #2A2A2A;"
+                                      "color: white;"
+                                      "font-size: 16px;"
+                                      "font-weight: bold;")
+        self.launcht_label.setStyleSheet("background: #2A2A2A;"
+                                      "color: white;"
+                                      "font-size: 16px;"
+                                      "font-weight: bold;")
+        self.pack_label.setStyleSheet("background: #2A2A2A;"
+                                      "color: white;"
+                                      "font-size: 16px;"
+                                      "font-weight: bold;")
+        self.id_label.setStyleSheet("background: #2A2A2A;"
+                                      "color: white;"
+                                      "font-size: 16px;"
+                                      "font-weight: bold;") 
+        self.hora.setStyleSheet("background-color: #2A2A2A;"
+                                "font-size: 20px;"
+                                "font-weight: bold;")
+        self.id.setStyleSheet("background-color: #2A2A2A;"
+                                "font-size: 20px;"
+                                "font-weight: bold;")
+        self.launcht.setStyleSheet("background-color: #2A2A2A;"
+                                "font-size: 20px;"
+                                "font-weight: bold;")
+        self.pack.setStyleSheet("background-color: #2A2A2A;"
+                                "font-size: 20px;"
+                                "font-weight: bold;")
+
+        self.frame_sensores.setStyleSheet("background-color: #151515;"
                                     "border: 1px 022466;"
                                     "border-radius: 5px;")
 
@@ -125,9 +175,24 @@ class MainWindow(QMainWindow):
         self.setStatusBar(QStatusBar(self))
 
     def CambioTamano(self, width, height): 
+        
+        # Tamaño y posición de identificadores: 
         self.frame_data.setGeometry(int(width*0.018), int(height*0.08), width - int(width*0.036), int(height*0.185))
-        self.tab_cont.setGeometry(int(width*0.018), int(height*0.3), width -int(width*0.3), int (height*0.65))
+        width_f, height_f = self.frame_data.geometry().width(), self.frame_data.geometry().height() 
+        self.hora_frame.setGeometry(int(width_f*0.04), int(height_f*0.2), 200, 30) 
+        self.launcht_frame.setGeometry(200 + int(width_f*0.07), int(height_f*0.2), 200, 30) 
+        self.pack_frame.setGeometry(width_f - 400 - int(width_f*0.07), int(height_f*0.2), 200, 30) 
+        self.id_frame.setGeometry(width_f- 200 - int(width_f*0.05), int(height_f*0.2), 200, 30) 
+        self.hora.setGeometry(int(width_f*0.04), int(height_f*0.24) + 30, 200, 50)
+        self.launcht.setGeometry(200 + int(width_f*0.07), int(height_f*0.24) + 30, 200, 50)
+        self.pack.setGeometry(width_f - 400 - int(width_f*0.07), int(height_f*0.24) + 30, 200, 50)
+        self.id.setGeometry(width_f- 200 - int(width_f*0.05), int(height_f*0.24) + 30, 200, 50)
+
+
+        # Tamaño de los datos de los sensores:  
         self.frame_sensores.setGeometry(int(width - width*0.264), int(height*0.3), width - int(width*0.754), int(height*0.65))
+        self.tab_cont.setGeometry(int(width*0.018), int(height*0.3), width -int(width*0.3), int(height*0.65))
+    
 
     def GuardarBaudRate(self,text):
         self.baud_rate = int(text)
