@@ -31,9 +31,8 @@ for i in range(0,100):
         a.append(0)
     elif 20 <= i and i < 30:
         a.append(round(((9.81)*(i-20)**2)/2, 1))
-        print(a)
     elif 30 <= i and i < 35: 
-        a.append(round(((9.81)*(i-20)**2)/2 - ((9.81)*(i - 30)**2)/2,1))
+        a.append(round(((9.81)*(20)**2)/2 - ((9.81)*(i - 30)**2)/2,1))
     elif 35 <= i and i <35+20: 
         a.append(round(200 - (i-35)*10,1))
     else: 
