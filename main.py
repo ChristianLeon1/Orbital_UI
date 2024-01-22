@@ -11,7 +11,6 @@ from PySide6.QtSerialPort import QSerialPortInfo, QSerialPort
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QApplication, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QWidget, QVBoxLayout, QProgressBar 
 # USAR threading para actualizar el puerto serial
-import pyqtgraph as pg
 
 class MainWindow(WidgetsIn): 
 
@@ -91,21 +90,30 @@ class MainWindow(WidgetsIn):
                         new_row[i] = float(new_row[i])
                     except: 
                         pass 
-            #Identificadores
             self.df.loc[len(self.df.index)] = new_row 
+
+            #Identificadores
             self.hora.setText(f"{self.df.iloc[len(self.df.index) - 1]['Hora']}")
             self.id.setText(f"{self.df.iloc[len(self.df.index) - 1]['ID']}")
             self.pack.setText(f"{self.df.iloc[len(self.df.index) - 1]['Packet Count']}")
             self.launcht.setText(f"{self.df.iloc[len(self.df.index) - 1]['Mission Time']}")
 
+            #Mensajes de sensores 
+            self.presion.setText(f"{self.df.iloc[len(self.df.index) - 1]['Presión']}")
+            self.giros_x.setText(f"{self.df.iloc[len(self.df.index) - 1]['Sat_pos_x']}")
+            self.giros_y.setText(f"{self.df.iloc[len(self.df.index) - 1]['Sat_pos_y']}")
+            self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
+            self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
+            #Falta poner la velocidad. 
+
             #Gráficas 
             self.data_volt.setData(self.df['Packet Count'], self.df['Voltaje'])
             self.data_temp.setData(self.df['Packet Count'], self.df['Temperatura'])
             self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']}")
-            if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 450:
+            if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
                 self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
             else: 
-                self.altura_b.setValue(450)
+                self.altura_b.setValue(501)
 
         except:
             pass

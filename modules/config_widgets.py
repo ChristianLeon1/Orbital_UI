@@ -6,6 +6,7 @@
 from PySide6.QtCore import QSize, Qt 
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QProgressBar 
+from modules.tab_style import ColorTab
 import pyqtgraph as pg
 
 class WidgetsIn(QMainWindow): 
@@ -135,6 +136,67 @@ class WidgetsIn(QMainWindow):
         self.frame_sensores.setStyleSheet("background-color: #151515;"
                                     "border: 1px 022466;"
                                     "border-radius: 5px;")
+        self.presion_label = QLabel(self.frame_sensores)
+        self.giros_x_label = QLabel(self.frame_sensores)
+        self.giros_y_label = QLabel(self.frame_sensores)
+        self.rpm_label = QLabel(self.frame_sensores)
+        self.velocidad_label = QLabel(self.frame_sensores)
+        self.estado_label = QLabel(self.frame_sensores)
+        self.presion_label.setText("PRESIÓN:")
+        self.giros_x_label.setText("GIROSCOPIO X:")
+        self.giros_y_label.setText("GIROSCOPIO Y:")
+        self.rpm_label.setText("RPM:")
+        self.velocidad_label.setText("VELOCIDAD:")
+        self.estado_label.setText("ESTADO:")
+        self.presion_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.giros_x_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.giros_y_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.rpm_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.velocidad_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.estado_label.setStyleSheet("font-size: 20px;"
+                                "font-weight: bold;")
+        self.presion = QLabel(self.frame_sensores)
+        self.giros_x = QLabel(self.frame_sensores)
+        self.giros_y = QLabel(self.frame_sensores)
+        self.rpm = QLabel(self.frame_sensores)
+        self.velocidad = QLabel(self.frame_sensores)
+        self.estado = QLabel(self.frame_sensores)
+        self.presion.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.giros_x.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.giros_y.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.rpm.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.velocidad.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.estado.setStyleSheet("background: #2A2A2A;"
+                                     "color: white;"
+                                     "font-size: 16px;"
+                                     "font-weight: bold;")
+        self.presion.setAlignment(Qt.AlignCenter)
+        self.giros_x.setAlignment(Qt.AlignCenter)
+        self.giros_y.setAlignment(Qt.AlignCenter)
+        self.rpm.setAlignment(Qt.AlignCenter)
+        self.velocidad.setAlignment(Qt.AlignCenter)
+        self.estado.setAlignment(Qt.AlignCenter)
+
 
         #Tabs 
         self.tab_cont = QTabWidget(self) 
@@ -173,7 +235,7 @@ class WidgetsIn(QMainWindow):
                                   background-color: red;
                                   }""")    
         self.altura_b.setTextVisible(False)
-        self.altura_b.setRange(0,450)
+        self.altura_b.setRange(0,500) 
         self.altura_frame_name = QFrame(self.altura_frame)
         self.altura_label = QLabel(self.altura_frame_name) 
         self.altura = QLabel(self.altura_frame) 
@@ -224,106 +286,18 @@ class WidgetsIn(QMainWindow):
         self.id.setGeometry(width_f- 200 - int(width_f*0.05), int(height_f*0.24) + 30, 200, 50)
 
         # Datos de los sensores:  
-        self.frame_sensores.setGeometry(int(width - width*0.264), int(height*0.3), width - int(width*0.754), int(height*0.65))
-
-
-
-
-
-def ColorTab(): 
-    return """
-QTabWidget::pane {
-    border: 1px solid black;
-    background: white;
-    border-radius: 3px; 
-}
-
-QTabWidget::tab-bar:top {
-    top: 1px;
-}
-
-QTabWidget::tab-bar:bottom {
-    bottom: 1px;
-}
-
-QTabWidget::tab-bar:left {
-    right: 1px;
-}
-
-QTabWidget::tab-bar:right {
-    left: 1px;
-}
-
-QTabBar::tab {
-    border: 1px solid black;
-    border-radius: 3px;
-
-}
-
-QTabBar::tab:selected {
-    background: #022466;
-}
-
-QTabBar::tab:!selected {
-    background: #242424;
-}
-
-QTabBar::tab:!selected:hover {
-    background: #303030;
-}
-
-QTabBar::tab:top:!selected {
-    margin-top: 3px;
-}
-
-QTabBar::tab:bottom:!selected {
-    margin-bottom: 3px;
-}
-
-QTabBar::tab:top, QTabBar::tab:bottom {
-    min-width: 8ex;
-    margin-right: -1px;
-    padding: 5px 10px 5px 10px;
-}
-
-QTabBar::tab:top:selected {
-    border-bottom-color: none;
-}
-
-QTabBar::tab:bottom:selected {
-    border-top-color: none;
-}
-
-QTabBar::tab:top:last, QTabBar::tab:bottom:last,
-QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
-    margin-right: 0;
-}
-
-QTabBar::tab:left:!selected {
-    margin-right: 3px;
-}
-
-QTabBar::tab:right:!selected {
-    margin-left: 3px;
-}
-
-QTabBar::tab:left, QTabBar::tab:right {
-    min-height: 8ex;
-    margin-bottom: -1px;
-    padding: 10px 5px 10px 5px;
-}
-
-QTabBar::tab:left:selected {
-    border-left-color: none;
-}
-
-QTabBar::tab:right:selected {
-    border-right-color: none;
-}
-
-QTabBar::tab:left:last, QTabBar::tab:right:last,
-QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
-    margin-bottom: 0;
-}
-""" 
+        self.frame_sensores.setGeometry(int(width - width*0.264), int(height*0.3), width - int(width*0.754), int(height*0.65)) 
+        width_f, height_f = self.frame_sensores.geometry().width(), self.frame_sensores.geometry().height() 
+        self.presion_label.setGeometry(int(width_f*0.1), int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.giros_x_label.setGeometry(int(width_f*0.1), 2*int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.giros_y_label.setGeometry(int(width_f*0.1), 3*int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.rpm_label.setGeometry(int(width_f*0.1),  4*int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.velocidad_label.setGeometry(int(width_f*0.1), 5*int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.estado_label.setGeometry(int(width_f*0.1), 6*int(height_f/7) - 15, int(width_f*0.4), 30)
+        self.presion.setGeometry(int(width_f*0.6), int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.giros_x.setGeometry(int(width_f*0.6), 2*int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.giros_y.setGeometry(int(width_f*0.6), 3*int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.rpm.setGeometry(int(width_f*0.6), 4*int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.velocidad.setGeometry(int(width_f*0.6), 5*int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.estado.setGeometry(int(width_f*0.6), 6*int(height_f/7) - 15, int(width_f*0.3), 30)
 
