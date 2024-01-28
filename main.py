@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# AÑO: 2024 CREADOR: Christian Yael Ramírez León
+
+# Interfaz de usuario para la estación terrena de cansat
 
 import sys
 import pandas as pd 
@@ -6,15 +12,16 @@ import folium
 from folium.plugins import minimap 
 from modules.config_widgets import *
 from modules.serial_mod import *
-from PySide6.QtCore import QSize, QIODevice, Qt 
+from PySide6.QtCore import QSize, QIODevice, Qt, QTimer
 from PySide6.QtSerialPort import QSerialPortInfo, QSerialPort
-from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
-from PySide6.QtWidgets import QMainWindow, QApplication, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QWidget, QVBoxLayout, QProgressBar 
+from PySide6.QtWidgets import QApplication
+import time
 # USAR threading para actualizar el puerto serial
 
 class MainWindow(WidgetsIn): 
 
     def __init__(self) -> None: 
+
         super(MainWindow, self).__init__()          
         self.app = app 
 
@@ -23,6 +30,10 @@ class MainWindow(WidgetsIn):
         #Inicialización de variables 
         self.baud_rate = None
         self.port = None 
+        self.sensores_timer = QTimer(self)
+        self.gps_timer = QTimer(self)
+        self.flag = False
+        self.posicion = [0,0]
 
         self.IncluirWidgetsConfig()
         #Configuración serial 
@@ -42,6 +53,14 @@ class MainWindow(WidgetsIn):
         self.guardar_csv.triggered.connect(self.GuardarCSV)
         #Puerto serial
         self.ser.readyRead.connect(self.LeerDatos) #Leer datos seriales 
+
+        #Actualización de datos de los sensores
+        self.sensores_timer.timeout.connect(self.ActualizarSensores)
+        self.gps_timer.timeout.connect(self.ActualizarGPS)
+
+        self.sensores_timer.start(200)
+        self.gps_timer.start(3000)
+        
 
     def GuardarBaudRate(self,text):
         self.baud_rate = int(text)
@@ -77,21 +96,17 @@ class MainWindow(WidgetsIn):
         else: 
             self.statusBar().showMessage(f'No se pudo conectar al puerto {self.port}', 10000)
 
-    def LeerDatos(self): 
-        if not self.ser.canReadLine(): 
-            return 
-        try: 
-            new_row = str(self.ser.readLine(),'utf-8').strip("\n").split(',')
-            for i in range(0,len(new_row)): 
-                if new_row[i].isdigit(): 
-                    new_row[i] = int(new_row[i]) 
-                else: 
-                    try: 
-                        new_row[i] = float(new_row[i])
-                    except: 
-                        pass 
-            self.df.loc[len(self.df.index)] = new_row 
+    def ActualizarGPS(self): 
+        if self.flag: 
+            
+            if not (self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud']):
+                self.maps = folium.Map(location= [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']], zoom_start=17)
+                folium.Marker(location=[self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]).add_to(self.maps)
+                self.gps_w.setHtml(self.maps.get_root().render())
+                self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]
 
+    def ActualizarSensores(self): 
+        if self.flag: 
             #Identificadores
             self.hora.setText(f"{self.df.iloc[len(self.df.index) - 1]['Hora']}")
             self.id.setText(f"{self.df.iloc[len(self.df.index) - 1]['ID']}")
@@ -113,8 +128,30 @@ class MainWindow(WidgetsIn):
             if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
                 self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
             else: 
-                self.altura_b.setValue(501)
+                self.altura_b.setValue(500)
 
+    def LeerDatos(self): 
+        if not self.ser.canReadLine(): 
+            return 
+        try: 
+            tiempo_inicio = time.time() #Parte del muestreo de tiempo  
+            
+            new_row = str(self.ser.readLine(),'utf-8').strip("\n").split(',')
+            for i in range(0,len(new_row)): 
+                if new_row[i].isdigit(): 
+                    new_row[i] = int(new_row[i]) 
+                else: 
+                    try: 
+                        new_row[i] = float(new_row[i])
+                    except: 
+                        pass 
+            self.df.loc[len(self.df.index)] = new_row  
+            #Muestreo de tiempo 
+            tiempo_final = time.time()
+            if not self.flag: 
+                self.flag = True
+            print(f'Tiempo: {tiempo_final - tiempo_inicio}') #Tiempo que se tarda en mostrar los datos 
+        
         except:
             pass
 

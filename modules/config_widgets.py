@@ -6,8 +6,11 @@
 from PySide6.QtCore import QSize, Qt 
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QProgressBar 
+
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
 import pyqtgraph as pg
+import folium 
 
 class WidgetsIn(QMainWindow): 
     def IncluirWidgetsConfig(self): 
@@ -254,6 +257,14 @@ class WidgetsIn(QMainWindow):
 
         #Tab GPS
         self.tab_GPS.setStyleSheet("border-radius: 5px;")
+        self.gps_frame = QFrame(self.tab_GPS)
+        self.gps_w = QWebEngineView(self.gps_frame)
+        self.maps = folium.Map(location = [19.4284, -99.1276], zoom_start=4)
+        self.gps_w.setHtml(self.maps.get_root().render())
+
+        self.gps_frame.setStyleSheet("background: #151515")
+
+
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
@@ -262,6 +273,11 @@ class WidgetsIn(QMainWindow):
         #Tab
         self.tab_cont.setGeometry(int(width*0.018), int(height*0.3), width -int(width*0.3), int(height*0.65))
         width_f, height_f = self.tab_cont.geometry().width(), self.tab_cont.geometry().height()
+
+        #GPS 
+        # width_f,height_f = self.tab_GPS.geometry().width(), self.tab_GPS.geometry().height()
+        self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.6*width_f), int(0.9*height_f) - 31)
+        self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
 
         # Gráficas 
         self.altura_frame.setGeometry(int(width_f*0.01), int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.04) - 31)
@@ -300,4 +316,5 @@ class WidgetsIn(QMainWindow):
         self.rpm.setGeometry(int(width_f*0.6), 4*int(height_f/7) - 15, int(width_f*0.3), 30)
         self.velocidad.setGeometry(int(width_f*0.6), 5*int(height_f/7) - 15, int(width_f*0.3), 30)
         self.estado.setGeometry(int(width_f*0.6), 6*int(height_f/7) - 15, int(width_f*0.3), 30)
-
+        
+        
