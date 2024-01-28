@@ -7,13 +7,11 @@
 
 import sys
 import pandas as pd 
-import numpy as np 
 import folium 
-from folium.plugins import minimap 
 from modules.config_widgets import *
 from modules.serial_mod import *
-from PySide6.QtCore import QSize, QIODevice, Qt, QTimer
-from PySide6.QtSerialPort import QSerialPortInfo, QSerialPort
+from PySide6.QtCore import QIODevice, QTimer
+from PySide6.QtSerialPort import QSerialPort
 from PySide6.QtWidgets import QApplication
 import time
 # USAR threading para actualizar el puerto serial
