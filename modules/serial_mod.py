@@ -4,7 +4,17 @@
 # AÑO: 2023 CREADOR: Christian Yael Ramírez León
 
 import subprocess 
+from PySide6.QtSerialPort import QSerialPortInfo 
+                 
 
+# def PuertoDisponible(): 
+#     port_names = []
+#     serialPortInfos = QSerialPortInfo.availablePorts()
+#     for portInfo in serialPortInfos:
+#         port_names.append(portInfo.portName())
+#     return port_names
+#
+    
 def PuertoDisponible(): 
     port = subprocess.run(['python3', '-m', 'serial.tools.list_ports'], capture_output=True) 
     port = str(port.stdout, 'utf-8')
@@ -15,3 +25,4 @@ def PuertoDisponible():
     for i in range(0,len(port)): 
         port[i] = port[i].strip()
     return port 
+

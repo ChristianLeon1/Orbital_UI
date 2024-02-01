@@ -32,6 +32,8 @@ class MainWindow(WidgetsIn):
         self.gps_timer = QTimer(self)
         self.flag = False
         self.posicion = [0,0]
+        self.tiempo1 = 0 
+        self.tiempo2 = 0
 
         self.IncluirWidgetsConfig()
         #Configuración serial 
@@ -122,7 +124,7 @@ class MainWindow(WidgetsIn):
             #Gráficas 
             self.data_volt.setData(self.df['Packet Count'], self.df['Voltaje'])
             self.data_temp.setData(self.df['Packet Count'], self.df['Temperatura'])
-            self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']}")
+            self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
             if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
                 self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
             else: 
@@ -132,8 +134,6 @@ class MainWindow(WidgetsIn):
         if not self.ser.canReadLine(): 
             return 
         try: 
-            tiempo_inicio = time.time() #Parte del muestreo de tiempo  
-            
             new_row = str(self.ser.readLine(),'utf-8').strip("\n").split(',')
             for i in range(0,len(new_row)): 
                 if new_row[i].isdigit(): 
