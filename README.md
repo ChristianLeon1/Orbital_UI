@@ -1,6 +1,6 @@
 # Orbital_UI
 
-La estación terrena desarrollada para la competencia de CANSAT PEU elaborada con la tecnología de diseño QT en python, por el equipo ORBITAL. 
+Programa para estación terrena desarrollada para la competencia de CANSAT PEU elaborada con la tecnología de diseño QT en python, por el equipo ORBITAL. 
 
 ## Dependencias 
 
