@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# AÑO: 2024 CREADOR: Christian Yael Ramírez León
+# AÑO: 2024 AUTOR: Christian Yael Ramírez León
 
 # Interfaz de usuario para la estación terrena de cansat
 
