@@ -6,11 +6,10 @@
 from PySide6.QtCore import QSize, Qt 
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QProgressBar 
-
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
 import pyqtgraph as pg
-import folium 
+import folium
 
 class WidgetsIn(QMainWindow): 
     def IncluirWidgetsConfig(self): 
@@ -87,7 +86,7 @@ class WidgetsIn(QMainWindow):
         self.launcht_label.setAlignment(Qt.AlignCenter)
         self.launcht_label.setGeometry(3,3,198,27)
         self.pack_label = QLabel(self.pack_frame) 
-        self.pack_label.setText("CONTEO DE PAQUETES")
+        self.pack_label.setText("PACKAGE COUNT")
         self.pack_label.setAlignment(Qt.AlignCenter)
         self.pack_label.setGeometry(3,3,198,27)
         self.hora = QLabel(self.frame_data)
@@ -140,22 +139,22 @@ class WidgetsIn(QMainWindow):
                                     "border: 1px 022466;"
                                     "border-radius: 5px;")
         self.presion_label = QLabel(self.frame_sensores)
-        self.giros_x_label = QLabel(self.frame_sensores)
-        self.giros_y_label = QLabel(self.frame_sensores)
+        self.pitch_label = QLabel(self.frame_sensores)
+        self.roll_label = QLabel(self.frame_sensores)
         self.rpm_label = QLabel(self.frame_sensores)
         self.velocidad_label = QLabel(self.frame_sensores)
         self.estado_label = QLabel(self.frame_sensores)
         self.presion_label.setText("PRESIÓN:")
-        self.giros_x_label.setText("GIROSCOPIO X:")
-        self.giros_y_label.setText("GIROSCOPIO Y:")
-        self.rpm_label.setText("AUTOGIRO RPM:")
+        self.pitch_label.setText("PITCH:")
+        self.roll_label.setText("ROLL:")
+        self.rpm_label.setText("RPM:")
         self.velocidad_label.setText("VELOCIDAD:")
         self.estado_label.setText("ESTADO:")
         self.presion_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
-        self.giros_x_label.setStyleSheet("font-size: 20px;"
+        self.pitch_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
-        self.giros_y_label.setStyleSheet("font-size: 20px;"
+        self.roll_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
         self.rpm_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
@@ -164,8 +163,8 @@ class WidgetsIn(QMainWindow):
         self.estado_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
         self.presion = QLabel(self.frame_sensores)
-        self.giros_x = QLabel(self.frame_sensores)
-        self.giros_y = QLabel(self.frame_sensores)
+        self.pitch = QLabel(self.frame_sensores)
+        self.roll = QLabel(self.frame_sensores)
         self.rpm = QLabel(self.frame_sensores)
         self.velocidad = QLabel(self.frame_sensores)
         self.estado = QLabel(self.frame_sensores)
@@ -173,11 +172,11 @@ class WidgetsIn(QMainWindow):
                                      "color: white;"
                                      "font-size: 16px;"
                                      "font-weight: bold;")
-        self.giros_x.setStyleSheet("background: #2A2A2A;"
+        self.pitch.setStyleSheet("background: #2A2A2A;"
                                      "color: white;"
                                      "font-size: 16px;"
                                      "font-weight: bold;")
-        self.giros_y.setStyleSheet("background: #2A2A2A;"
+        self.roll.setStyleSheet("background: #2A2A2A;"
                                      "color: white;"
                                      "font-size: 16px;"
                                      "font-weight: bold;")
@@ -194,12 +193,11 @@ class WidgetsIn(QMainWindow):
                                      "font-size: 16px;"
                                      "font-weight: bold;")
         self.presion.setAlignment(Qt.AlignCenter)
-        self.giros_x.setAlignment(Qt.AlignCenter)
-        self.giros_y.setAlignment(Qt.AlignCenter)
+        self.pitch.setAlignment(Qt.AlignCenter)
+        self.roll.setAlignment(Qt.AlignCenter)
         self.rpm.setAlignment(Qt.AlignCenter)
         self.velocidad.setAlignment(Qt.AlignCenter)
         self.estado.setAlignment(Qt.AlignCenter)
-
 
         #Tabs 
         self.tab_cont = QTabWidget(self) 
@@ -218,31 +216,31 @@ class WidgetsIn(QMainWindow):
         self.temp_frame.setStyleSheet("background: #151515")
         self.volt_frame.setStyleSheet("background: #151515")
         self.volt_container = QVBoxLayout(self.volt_frame)
+        self.temp_container = QVBoxLayout(self.temp_frame)
         self.volt = pg.PlotWidget()
+        self.temp = pg.PlotWidget()
+        self.volt_container.addWidget(self.volt)
+        self.temp_container.addWidget(self.temp)
+        #Configuración de gráficas 
         self.volt.showGrid(x=True, y=True)
         self.volt.setLabel('left', 'Voltaje', units='v')
         self.volt.setLabel('bottom', 'Tiempo', units='s')
-        self.volt_container.addWidget(self.volt)
         self.volt.setYRange(0,10)
-        self.data_volt = self.volt.plot([],[])
-        self.temp_container = QVBoxLayout(self.temp_frame)
-        self.temp = pg.PlotWidget()
+        self.volt.setXRange(0,200) 
+        self.data_volt = self.volt.plot(pen=pg.mkPen("#11BEF6"))
         self.temp.showGrid(x=True, y=True)
         self.temp.setLabel('left', 'Temperatura', units='°C')
         self.temp.setLabel('bottom', 'Tiempo', units='s')
-        self.temp_container.addWidget(self.temp)
         self.temp.setYRange(0,30)
-        self.data_temp = self.temp.plot([],[])
+        self.temp.setXRange(0,200)
+        self.data_temp = self.temp.plot(pen=pg.mkPen("#11BEF6"))
+        # Barra de altitud.  
         self.altura_b = QProgressBar(self.altura_frame)
         self.altura_b.setOrientation(Qt.Vertical)
-        self.altura_b.setStyleSheet("""QProgressBar{
-                                  border: 2px solid white;
-                                  border-radius: 5px;
-                                  text-align: center; 
-                                  }
-                                  QProgressBar::chunk {
-                                  background-color: red;
-                                  }""")    
+        self.altura_b.setStyleSheet("QProgressBar{border: 2px solid white;"
+                                    "border-radius: 5px;"
+                                    "text-align: center;}"
+                                    "QProgressBar::chunk {background-color: red;}")    
         self.altura_b.setTextVisible(False)
         self.altura_b.setRange(0,500) 
         self.altura_frame_name = QFrame(self.altura_frame)
@@ -308,19 +306,19 @@ class WidgetsIn(QMainWindow):
         self.id.setGeometry(width_f- 200 - int(width_f*0.05), int(height_f*0.24) + 30, 200, 50)
 
         # Datos de los sensores:  
-        self.frame_sensores.setGeometry(int(width - width*0.264), int(height*0.3), width - int(width*0.754), int(height*0.65)) 
+        self.frame_sensores.setGeometry(int(width - width*0.2), int(height*0.3), width - int(width*0.818), int(height*0.65)) 
         width_f, height_f = self.frame_sensores.geometry().width(), self.frame_sensores.geometry().height() 
-        self.presion_label.setGeometry(int(width_f*0.1), int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.giros_x_label.setGeometry(int(width_f*0.1), 2*int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.giros_y_label.setGeometry(int(width_f*0.1), 3*int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.rpm_label.setGeometry(int(width_f*0.1),  4*int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.velocidad_label.setGeometry(int(width_f*0.1), 5*int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.estado_label.setGeometry(int(width_f*0.1), 6*int(height_f/7) - 15, int(width_f*0.4), 30)
-        self.presion.setGeometry(int(width_f*0.6), int(height_f/7) - 15, int(width_f*0.3), 30)
-        self.giros_x.setGeometry(int(width_f*0.6), 2*int(height_f/7) - 15, int(width_f*0.3), 30)
-        self.giros_y.setGeometry(int(width_f*0.6), 3*int(height_f/7) - 15, int(width_f*0.3), 30)
-        self.rpm.setGeometry(int(width_f*0.6), 4*int(height_f/7) - 15, int(width_f*0.3), 30)
-        self.velocidad.setGeometry(int(width_f*0.6), 5*int(height_f/7) - 15, int(width_f*0.3), 30)
-        self.estado.setGeometry(int(width_f*0.6), 6*int(height_f/7) - 15, int(width_f*0.3), 30)
+        self.presion_label.setGeometry(int(width_f*0.08), int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.pitch_label.setGeometry(int(width_f*0.08), 2*int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.roll_label.setGeometry(int(width_f*0.08), 3*int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.rpm_label.setGeometry(int(width_f*0.08),  4*int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.velocidad_label.setGeometry(int(width_f*0.08), 5*int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.estado_label.setGeometry(int(width_f*0.08), 6*int(height_f/7) - 15, int(width_f*0.37), 30)
+        self.presion.setGeometry(int(width_f*0.55), int(height_f/7) - 15, int(width_f*0.35), 30)
+        self.pitch.setGeometry(int(width_f*0.55), 2*int(height_f/7) - 15, int(width_f*0.35), 30)
+        self.roll.setGeometry(int(width_f*0.55), 3*int(height_f/7) - 15, int(width_f*0.35), 30)
+        self.rpm.setGeometry(int(width_f*0.55), 4*int(height_f/7) - 15, int(width_f*0.35), 30)
+        self.velocidad.setGeometry(int(width_f*0.55), 5*int(height_f/7) - 15, int(width_f*0.35), 30)
+        self.estado.setGeometry(int(width_f*0.55), 6*int(height_f/7) - 15, int(width_f*0.35), 30)
         
         

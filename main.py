@@ -23,17 +23,18 @@ class MainWindow(WidgetsIn):
         super(MainWindow, self).__init__()          
         self.app = app 
 
-        self.df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Presión':[],'Temperatura':[],'Voltaje':[],'Hora':[],'Latitud':[],'Longitud':[],'AltitudGPS':[],'GPS SATS':[],'Sat_pos_x':[],'Sat_pos_y':[],'Autogiro_vel':[],'Estado Software':[]})
+        self.df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Presión':[],'Temperatura':[],'Voltaje':[],'Hora':[],'Latitud':[],'Longitud':[],'AltitudGPS':[],'GPS SATS':[],'Pitch':[],'Roll':[],'Autogiro_vel':[],'Estado Software':[]})
 
         #Inicialización de variables 
         self.baud_rate = None
         self.port = None 
         self.sensores_timer = QTimer(self)
         self.gps_timer = QTimer(self)
+        self.graficas_timer = QTimer(self)
         self.flag = False
         self.posicion = [0,0]
-        self.tiempo1 = 0 
-        self.tiempo2 = 0
+        self.freq = 60 
+        self.graf_x = 200
 
         self.IncluirWidgetsConfig()
         #Configuración serial 
@@ -56,11 +57,8 @@ class MainWindow(WidgetsIn):
 
         #Actualización de datos de los sensores
         self.sensores_timer.timeout.connect(self.ActualizarSensores)
-        self.gps_timer.timeout.connect(self.ActualizarGPS)
-
-        self.sensores_timer.start(200)
-        self.gps_timer.start(3000)
-        
+        self.gps_timer.timeout.connect(self.ActualizarGPS)        
+        self.graficas_timer.timeout.connect(self.ActualizarGraficas)
 
     def GuardarBaudRate(self,text):
         self.baud_rate = int(text)
@@ -115,21 +113,26 @@ class MainWindow(WidgetsIn):
 
             #Mensajes de sensores 
             self.presion.setText(f"{self.df.iloc[len(self.df.index) - 1]['Presión']}")
-            self.giros_x.setText(f"{self.df.iloc[len(self.df.index) - 1]['Sat_pos_x']}")
-            self.giros_y.setText(f"{self.df.iloc[len(self.df.index) - 1]['Sat_pos_y']}")
+            self.pitch.setText(f"{self.df.iloc[len(self.df.index) - 1]['Pitch']}")
+            self.roll.setText(f"{self.df.iloc[len(self.df.index) - 1]['Roll']}")
             self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
             self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
             #Falta poner la velocidad. 
 
             #Gráficas 
-            self.data_volt.setData(self.df['Packet Count'], self.df['Voltaje'])
-            self.data_temp.setData(self.df['Packet Count'], self.df['Temperatura'])
-            self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
-            if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
-                self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
-            else: 
-                self.altura_b.setValue(500)
-
+    def ActualizarGraficas(self):
+        if not self.df.iloc[len((self.df.index)) - 1]['Packet Count'] < self.graf_x: 
+            self.graf_x += 200
+            self.volt.setXRange(self.graf_x - 200, self.graf_x)
+            self.temp.setXRange(self.graf_x - 200, self.graf_x)
+        self.data_volt.setData(self.df['Packet Count'], self.df['Voltaje'])
+        self.data_temp.setData(self.df['Packet Count'], self.df['Temperatura'])
+        self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
+        if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
+            self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
+        else: 
+            self.altura_b.setValue(500)
+            
     def LeerDatos(self): 
         if not self.ser.canReadLine(): 
             return 
@@ -144,12 +147,15 @@ class MainWindow(WidgetsIn):
                     except: 
                         pass 
             self.df.loc[len(self.df.index)] = new_row  
-            #Muestreo de tiempo 
-            tiempo_final = time.time()
             if not self.flag: 
                 self.flag = True
-            print(f'Tiempo: {tiempo_final - tiempo_inicio}') #Tiempo que se tarda en mostrar los datos 
-        
+                self.sensores_timer.start(500)
+                self.gps_timer.start(3007)
+                self.graficas_timer.start(73)
+                self.ActualizarGPS()
+                self.ActualizarSensores() 
+                self.ActualizarGraficas()
+            #Gráficas
         except:
             pass
 
