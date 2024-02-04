@@ -22,6 +22,7 @@ class MainWindow(WidgetsIn):
 
         super(MainWindow, self).__init__()          
         self.app = app 
+        self.tiempo_transcur = [0]
 
         self.df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Presión':[],'Temperatura':[],'Voltaje':[],'Hora':[],'Latitud':[],'Longitud':[],'AltitudGPS':[],'GPS SATS':[],'Pitch':[],'Roll':[],'Autogiro_vel':[],'Estado Software':[]})
 
@@ -33,8 +34,7 @@ class MainWindow(WidgetsIn):
         self.graficas_timer = QTimer(self)
         self.flag = False
         self.posicion = [0,0]
-        self.freq = 60 
-        self.graf_x = 200
+        self.graf_x = 15
 
         self.IncluirWidgetsConfig()
         #Configuración serial 
@@ -118,15 +118,18 @@ class MainWindow(WidgetsIn):
             self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
             self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
             #Falta poner la velocidad. 
+            if len(self.df.index) > 1: 
+                self.velocidad.setText(f"{round((self.df.iloc[len(self.df.index) - 2]['Altitud'] - self.df.iloc[len(self.df.index) - 1]['Altitud']) / (self.tiempo_transcur[len(self.tiempo_transcur) - 1] - self.tiempo_transcur[len(self.tiempo_transcur) - 2]), 2)}")
+            else: 
+                self.velocidad.setText(f"0.0")
 
-            #Gráficas 
     def ActualizarGraficas(self):
-        if not self.df.iloc[len((self.df.index)) - 1]['Packet Count'] < self.graf_x: 
-            self.graf_x += 200
-            self.volt.setXRange(self.graf_x - 200, self.graf_x)
-            self.temp.setXRange(self.graf_x - 200, self.graf_x)
-        self.data_volt.setData(self.df['Packet Count'], self.df['Voltaje'])
-        self.data_temp.setData(self.df['Packet Count'], self.df['Temperatura'])
+        if not self.tiempo_transcur[len((self.df.index)) - 1] < self.graf_x: 
+            self.graf_x += 15
+            self.volt.setXRange(self.graf_x - 15, self.graf_x)
+            self.temp.setXRange(self.graf_x - 15, self.graf_x)
+        self.data_volt.setData(self.tiempo_transcur, self.df['Voltaje'])
+        self.data_temp.setData(self.tiempo_transcur, self.df['Temperatura'])
         self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
         if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
             self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
@@ -147,15 +150,18 @@ class MainWindow(WidgetsIn):
                     except: 
                         pass 
             self.df.loc[len(self.df.index)] = new_row  
+
             if not self.flag: 
                 self.flag = True
+                self.tiempo_inic = time.time()
                 self.sensores_timer.start(500)
                 self.gps_timer.start(3007)
                 self.graficas_timer.start(73)
                 self.ActualizarGPS()
                 self.ActualizarSensores() 
                 self.ActualizarGraficas()
-            #Gráficas
+            else: 
+                self.tiempo_transcur.append(time.time() - self.tiempo_inic)
         except:
             pass
 
