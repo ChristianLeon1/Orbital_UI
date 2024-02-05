@@ -124,19 +124,28 @@ class WidgetsIn(QMainWindow):
         self.presion_container.addWidget(self.presion)
         self.volt.setYRange(0,10)
         self.temp.setYRange(0,30)
+        # self.presion.setYRange(7500,8000)
 
         # Barra de altitud.  
         self.altura_b = QProgressBar(self.altura_frame)
         self.altura_b.setOrientation(Qt.Vertical)
         self.altura_b.setStyleSheet("QProgressBar{border: 2px solid white;"
-                                    "border-radius: 5px;"
+                                    "border-radius: 1px;"
                                     "text-align: center;}"
-                                    "QProgressBar::chunk {background-color: red;}")    
+                                    "QProgressBar::chunk {background-color: red;}")     
         self.altura_b.setTextVisible(False)
         self.altura_b.setRange(0,500) 
         self.altura_frame_name = CustomFrame(self.altura_frame, "#00BDFF")
         self.altura_label = CustomLabel("ALTITUD",self.altura_frame_name) 
         self.altura = CustomLabel(parent=self.altura_frame) 
+        self.piso_marca = CustomFrame(self.altura_frame, "white")
+        self.autogiro_marca = CustomFrame(self.altura_frame, "white")
+        self.drone_marca = CustomFrame(self.altura_frame, "white")
+        self.max_marca = CustomFrame(self.altura_frame, "white")
+        self.piso_label = CustomLabel("0 m", self.altura_frame, 12, "#151515",Qt.AlignLeft) 
+        self.autogiro_label = CustomLabel("200 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
+        self.drone_label = CustomLabel("450 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
+        self.max_label = CustomLabel("500 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
         
         #Tab GPS
         self.tab_GPS.setStyleSheet("border-radius: 5px;")
@@ -160,16 +169,24 @@ class WidgetsIn(QMainWindow):
         self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
 
         # Gráficas 
-        self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.08), height_f - int(height_f*0.04) - 31)
+        self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.11), height_f - int(height_f*0.03) - 31)
         self.volt_frame.setGeometry(int(width_f*0.15), int(height_f*0.02), int(width_f*0.46), height_f - int(height_f*0.03) - 31) 
         self.temp_frame.setGeometry(int(width_f*0.62), int(height_f*0.02), int(width_f*0.365), height_f - int(height_f*0.52)) 
         self.presion_frame.setGeometry(int(width_f*0.62), int(height_f*0.51), int(width_f*0.365), height_f - int(height_f*0.52) - 31)
 
         width_f, height_f = self.altura_frame.geometry().width(), self.altura_frame.geometry().height()
-        self.altura_b.setGeometry(int(width_f*0.45),int(height_f*0.05),int(width_f*0.1), int(height_f*0.75))
+        self.altura_b.setGeometry(int(width_f*0.3),int(height_f*0.05),int(width_f*0.1), int(height_f*0.73))
         self.altura_frame_name.setGeometry(int(width_f*0.1), int(height_f*0.82), int(width_f*0.8), 30)
         self.altura_label.setGeometry(3,3,self.altura_frame_name.geometry().width() - 3, 28)
         self.altura.setGeometry(int(width_f*0.1), int(height_f*0.9), int(width_f*0.8), 30)
+        self.piso_marca.setGeometry(int(width_f*0.3), int(height_f*0.78) - 2, int(width_f*0.25), 2)
+        self.autogiro_marca.setGeometry(int(width_f*0.3), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.6) - 3, int(width_f*0.25), 2)
+        self.drone_marca.setGeometry(int(width_f*0.3), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.1) - 3, int(width_f*0.25), 2)
+        self.max_marca.setGeometry(int(width_f*0.3), int(height_f*0.05), int(width_f*0.25), 2)
+        self.piso_label.setGeometry(int(width_f*0.565), int(height_f*0.78) - 9, int(width_f*0.24), int(16))
+        self.autogiro_label.setGeometry(int(width_f*0.565), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.6) - 10, int(width_f*0.24), int(16))
+        self.drone_label.setGeometry(int(width_f*0.565),  int(height_f*0.05) + int(self.altura_b.geometry().height()*0.1)  - 9, int(width_f*0.24), int(16))
+        self.max_label.setGeometry(int(width_f*0.565), int(height_f*0.05) - 8, int(width_f*0.239), int(16))
     
         # Identificadores: 
         self.frame_data.setGeometry(int(width*0.018), int(height*0.08), width - int(width*0.036), int(height*0.185))

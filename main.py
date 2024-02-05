@@ -38,8 +38,8 @@ class MainWindow(WidgetsIn):
 
         self.IncluirWidgetsConfig()
         #Configuración serial 
-        self.ser = QSerialPort() #Inicialización puerto serial 
-        self.ActualizarSerial() # Actualizar los puertos al inicio del programa 
+        self.ser = QSerialPort()        
+        self.ActualizarSerial() 
 
         # Señales 
         #Botones 
@@ -53,7 +53,7 @@ class MainWindow(WidgetsIn):
         self.salir_app.triggered.connect(self.SalirApp) 
         self.guardar_csv.triggered.connect(self.GuardarCSV)
         #Puerto serial
-        self.ser.readyRead.connect(self.LeerDatos) #Leer datos seriales 
+        self.ser.readyRead.connect(self.LeerDatos)
 
         #Actualización de datos de los sensores
         self.sensores_timer.timeout.connect(self.ActualizarSensores)
