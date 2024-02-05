@@ -117,8 +117,12 @@ class MainWindow(WidgetsIn):
             self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
             self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
             #Falta poner la velocidad. 
-            if len(self.df.index) > 1: 
-                self.velocidad.setText(f"{round((self.df.iloc[len(self.df.index) - 2]['Altitud'] - self.df.iloc[len(self.df.index) - 1]['Altitud']) / (self.tiempo_transcur[len(self.tiempo_transcur) - 1] - self.tiempo_transcur[len(self.tiempo_transcur) - 2]), 2)}")
+            if len(self.df.index) > 20: 
+                velocidad = round((self.df.iloc[len(self.df.index) - 20]['Altitud'] - self.df.iloc[len(self.df.index) - 1]['Altitud']) / (self.tiempo_transcur[len(self.tiempo_transcur) - 20] - self.tiempo_transcur[len(self.tiempo_transcur) - 1]), 2)
+                if velocidad == 0: 
+                    self.velocidad.setText(f"0.0")
+                else: 
+                    self.velocidad.setText(f"{velocidad}")
             else: 
                 self.velocidad.setText(f"0.0")
 
@@ -134,7 +138,7 @@ class MainWindow(WidgetsIn):
 
         self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
         if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
-            self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])
+            self.altura_b.setValue(int(round(self.df.iloc[len(self.df.index) - 1]['Altitud'])))
         else: 
             self.altura_b.setValue(500)
             

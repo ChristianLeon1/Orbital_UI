@@ -124,7 +124,7 @@ class WidgetsIn(QMainWindow):
         self.presion_container.addWidget(self.presion)
         self.volt.setYRange(0,10)
         self.temp.setYRange(0,30)
-        # self.presion.setYRange(7500,8000)
+        self.presion.setYRange(75000,80000)
 
         # Barra de altitud.  
         self.altura_b = QProgressBar(self.altura_frame)
