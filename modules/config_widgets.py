@@ -8,11 +8,13 @@ from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QProgressBar 
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
+from modules.custom_widgets import *
 import pyqtgraph as pg
 import folium
 
 class WidgetsIn(QMainWindow): 
     def IncluirWidgetsConfig(self): 
+
         #Ajustes app 
         # self.setWindowIcon()   #Falta agregar el ícono 
         self.setWindowTitle("Estación Terrena ORBITAL")
@@ -68,82 +70,30 @@ class WidgetsIn(QMainWindow):
         self.setStatusBar(QStatusBar(self))
         
         # Cuadro con identificadores de la misión. 
-        self.frame_data = QFrame(self)
-        self.hora_frame = QFrame(self.frame_data) 
-        self.id_frame = QFrame(self.frame_data)
-        self.launcht_frame = QFrame(self.frame_data)
-        self.pack_frame = QFrame(self.frame_data)
-        self.hora_label = QLabel(self.hora_frame)
-        self.hora_label.setText("HORA")
-        self.hora_label.setAlignment(Qt.AlignCenter) 
-        self.hora_label.setGeometry(3,3,198,27)
-        self.id_label = QLabel(self.id_frame)
-        self.id_label.setText("ID")
-        self.id_label.setAlignment(Qt.AlignCenter)
-        self.id_label.setGeometry(3,3,198,27)
-        self.launcht_label = QLabel(self.launcht_frame)
-        self.launcht_label.setText("LAUNCH TIME")
-        self.launcht_label.setAlignment(Qt.AlignCenter)
-        self.launcht_label.setGeometry(3,3,198,27)
-        self.pack_label = QLabel(self.pack_frame) 
-        self.pack_label.setText("PACKAGE COUNT")
-        self.pack_label.setAlignment(Qt.AlignCenter)
-        self.pack_label.setGeometry(3,3,198,27)
-        self.hora = QLabel(self.frame_data)
-        self.hora.setAlignment(Qt.AlignCenter)
-        self.id = QLabel(self.frame_data)
-        self.id.setAlignment(Qt.AlignCenter)
-        self.launcht = QLabel(self.frame_data)
-        self.launcht.setAlignment(Qt.AlignCenter)
-        self.pack = QLabel(self.frame_data)
-        self.pack.setAlignment(Qt.AlignCenter)
-        self.frame_data.setStyleSheet("background: #151515;"
-                                    "border: 1px;"
-                                    "border-radius: 5px;") 
-        self.hora_frame.setStyleSheet("background: #00BDFF;") 
-        self.id_frame.setStyleSheet("background: #00BDFF;")
-        self.launcht_frame.setStyleSheet("background: #00BDFF;")
-        self.pack_frame.setStyleSheet("background: #00BDFF;")
-        self.hora_label.setStyleSheet("background: #2A2A2A;"
-                                      "color: white;"
-                                      "font-size: 16px;"
-                                      "font-weight: bold;")
-        self.launcht_label.setStyleSheet("background: #2A2A2A;"
-                                      "color: white;"
-                                      "font-size: 16px;"
-                                      "font-weight: bold;")
-        self.pack_label.setStyleSheet("background: #2A2A2A;"
-                                      "color: white;"
-                                      "font-size: 16px;"
-                                      "font-weight: bold;")
-        self.id_label.setStyleSheet("background: #2A2A2A;"
-                                      "color: white;"
-                                      "font-size: 16px;"
-                                      "font-weight: bold;") 
-        self.hora.setStyleSheet("background-color: #2A2A2A;"
-                                "font-size: 20px;"
-                                "font-weight: bold;")
-        self.id.setStyleSheet("background-color: #2A2A2A;"
-                                "font-size: 20px;"
-                                "font-weight: bold;")
-        self.launcht.setStyleSheet("background-color: #2A2A2A;"
-                                "font-size: 20px;"
-                                "font-weight: bold;")
-        self.pack.setStyleSheet("background-color: #2A2A2A;"
-                                "font-size: 20px;"
-                                "font-weight: bold;")
+        self.frame_data = CustomFrame(parent=self, background="#151515")
+        self.hora_frame = CustomFrame(parent=self.frame_data, background="#00BDFF") 
+        self.id_frame = CustomFrame(parent=self.frame_data, background="#00BDFF")
+        self.launcht_frame = CustomFrame(parent=self.frame_data, background="#00BDFF")
+        self.pack_frame = CustomFrame(parent=self.frame_data, background="#00BDFF")
+        self.hora_label = CustomLabel("HORA", self.hora_frame)
+        self.id_label = CustomLabel("ID", self.id_frame)
+        self.launcht_label = CustomLabel("LAUNCH TIME", self.launcht_frame)
+        self.pack_label = CustomLabel("PACKAGE COUNT", self.pack_frame) 
+
+        self.hora = CustomLabel(parent=self.frame_data,fsize=20)
+        self.id = CustomLabel(parent=self.frame_data,fsize=20)
+        self.launcht = CustomLabel(parent=self.frame_data,fsize=20)
+        self.pack = CustomLabel(parent=self.frame_data,fsize=20)
 
         #Sensores 
-        self.frame_sensores = QFrame(self)
-        self.frame_sensores.setStyleSheet("background-color: #151515;"
-                                    "border: 1px 022466;"
-                                    "border-radius: 5px;")
-        self.presion_label = QLabel(self.frame_sensores)
-        self.pitch_label = QLabel(self.frame_sensores)
-        self.roll_label = QLabel(self.frame_sensores)
-        self.rpm_label = QLabel(self.frame_sensores)
-        self.velocidad_label = QLabel(self.frame_sensores)
-        self.estado_label = QLabel(self.frame_sensores)
+        self.frame_sensores = CustomFrame(parent=self, background="#151515")
+        self.presion_label = CustomLabel("PRESIÓN:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+        self.pitch_label = CustomLabel("PITCH:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+        self.roll_label = CustomLabel("ROLL:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+        self.rpm_label = CustomLabel("RPM:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+        self.velocidad_label = CustomLabel("VELOCIDAD:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+        self.estado_label = CustomLabel("ESTADO:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
+
         self.presion_label.setText("PRESIÓN:")
         self.pitch_label.setText("PITCH:")
         self.roll_label.setText("ROLL:")
@@ -162,43 +112,14 @@ class WidgetsIn(QMainWindow):
                                 "font-weight: bold;")
         self.estado_label.setStyleSheet("font-size: 20px;"
                                 "font-weight: bold;")
-        self.presion = QLabel(self.frame_sensores)
-        self.pitch = QLabel(self.frame_sensores)
-        self.roll = QLabel(self.frame_sensores)
-        self.rpm = QLabel(self.frame_sensores)
-        self.velocidad = QLabel(self.frame_sensores)
-        self.estado = QLabel(self.frame_sensores)
-        self.presion.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.pitch.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.roll.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.rpm.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.velocidad.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.estado.setStyleSheet("background: #2A2A2A;"
-                                     "color: white;"
-                                     "font-size: 16px;"
-                                     "font-weight: bold;")
-        self.presion.setAlignment(Qt.AlignCenter)
-        self.pitch.setAlignment(Qt.AlignCenter)
-        self.roll.setAlignment(Qt.AlignCenter)
-        self.rpm.setAlignment(Qt.AlignCenter)
-        self.velocidad.setAlignment(Qt.AlignCenter)
-        self.estado.setAlignment(Qt.AlignCenter)
 
+        self.presion = CustomLabel(parent=self.frame_sensores)
+        self.pitch = CustomLabel(parent=self.frame_sensores)
+        self.roll = CustomLabel(parent=self.frame_sensores)
+        self.rpm = CustomLabel(parent=self.frame_sensores)
+        self.velocidad = CustomLabel(parent=self.frame_sensores)
+        self.estado = CustomLabel(parent=self.frame_sensores)
+        
         #Tabs 
         self.tab_cont = QTabWidget(self) 
         self.tab_graphs = QFrame()
@@ -209,31 +130,19 @@ class WidgetsIn(QMainWindow):
 
         #Tab Graficas
         self.tab_graphs.setStyleSheet("border-radius: 5px;")
-        self.altura_frame = QFrame(self.tab_graphs)
-        self.temp_frame = QFrame(self.tab_graphs) 
-        self.volt_frame = QFrame(self.tab_graphs) 
-        self.altura_frame.setStyleSheet("background: #151515")
-        self.temp_frame.setStyleSheet("background: #151515")
-        self.volt_frame.setStyleSheet("background: #151515")
+        self.altura_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
+        self.temp_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
+        self.volt_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
         self.volt_container = QVBoxLayout(self.volt_frame)
         self.temp_container = QVBoxLayout(self.temp_frame)
-        self.volt = pg.PlotWidget()
-        self.temp = pg.PlotWidget()
+
+        self.volt = CustomGraph("Voltaje", "v")
+        self.temp = CustomGraph("Temperatura", "°C")
         self.volt_container.addWidget(self.volt)
         self.temp_container.addWidget(self.temp)
-        #Configuración de gráficas 
-        self.volt.showGrid(x=True, y=True)
-        self.volt.setLabel('left', 'Voltaje', units='v')
-        self.volt.setLabel('bottom', 'Tiempo', units='s')
         self.volt.setYRange(0,10)
-        self.volt.setXRange(0,15) 
-        self.data_volt = self.volt.plot(pen=pg.mkPen("#11BEF6"))
-        self.temp.showGrid(x=True, y=True)
-        self.temp.setLabel('left', 'Temperatura', units='°C')
-        self.temp.setLabel('bottom', 'Tiempo', units='s')
         self.temp.setYRange(0,30)
-        self.temp.setXRange(0,15)
-        self.data_temp = self.temp.plot(pen=pg.mkPen("#11BEF6"))
+
         # Barra de altitud.  
         self.altura_b = QProgressBar(self.altura_frame)
         self.altura_b.setOrientation(Qt.Vertical)

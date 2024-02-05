@@ -128,8 +128,9 @@ class MainWindow(WidgetsIn):
             self.graf_x += 15
             self.volt.setXRange(self.graf_x - 15, self.graf_x)
             self.temp.setXRange(self.graf_x - 15, self.graf_x)
-        self.data_volt.setData(self.tiempo_transcur, self.df['Voltaje'])
-        self.data_temp.setData(self.tiempo_transcur, self.df['Temperatura'])
+        self.volt.data.setData(self.tiempo_transcur, self.df['Voltaje'])
+        self.temp.data.setData(self.tiempo_transcur, self.df['Temperatura'])
+
         self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
         if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
             self.altura_b.setValue(self.df.iloc[len(self.df.index) - 1]['Altitud'])

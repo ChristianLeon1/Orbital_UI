@@ -13,7 +13,7 @@ df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Pre
 a = []
 
 for i in range(0,100): 
-    for j in range(0,60): 
+    for j in range(0,59): 
 
         #ID
         a.append("#ORB")
