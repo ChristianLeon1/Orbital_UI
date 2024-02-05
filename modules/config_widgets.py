@@ -86,33 +86,12 @@ class WidgetsIn(QMainWindow):
 
         #Sensores 
         self.frame_sensores = CustomFrame(parent=self, background="#151515")
-        self.presion_label = CustomLabel("PRESIÓN:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
         self.pitch_label = CustomLabel("PITCH:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
         self.roll_label = CustomLabel("ROLL:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
         self.rpm_label = CustomLabel("RPM:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
         self.velocidad_label = CustomLabel("VELOCIDAD:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
         self.estado_label = CustomLabel("ESTADO:", self.frame_sensores, 20, "#151515", Qt.AlignLeft)
 
-        self.presion_label.setText("PRESIÓN:")
-        self.pitch_label.setText("PITCH:")
-        self.roll_label.setText("ROLL:")
-        self.rpm_label.setText("RPM:")
-        self.velocidad_label.setText("VELOCIDAD:")
-        self.estado_label.setText("ESTADO:")
-        self.presion_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-        self.pitch_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-        self.roll_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-        self.rpm_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-        self.velocidad_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-        self.estado_label.setStyleSheet("font-size: 20px;"
-                                "font-weight: bold;")
-
-        self.presion = CustomLabel(parent=self.frame_sensores)
         self.pitch = CustomLabel(parent=self.frame_sensores)
         self.roll = CustomLabel(parent=self.frame_sensores)
         self.rpm = CustomLabel(parent=self.frame_sensores)
@@ -132,13 +111,17 @@ class WidgetsIn(QMainWindow):
         self.altura_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
         self.temp_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
         self.volt_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
+        self.presion_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
         self.volt_container = QVBoxLayout(self.volt_frame)
         self.temp_container = QVBoxLayout(self.temp_frame)
+        self.presion_container = QVBoxLayout(self.presion_frame)
 
         self.volt = CustomGraph("Voltaje", "v")
         self.temp = CustomGraph("Temperatura", "°C")
+        self.presion = CustomGraph("Presión", "Pa")
         self.volt_container.addWidget(self.volt)
         self.temp_container.addWidget(self.temp)
+        self.presion_container.addWidget(self.presion)
         self.volt.setYRange(0,10)
         self.temp.setYRange(0,30)
 
@@ -169,18 +152,19 @@ class WidgetsIn(QMainWindow):
         height = self.geometry().height()
 
         #Tab
-        self.tab_cont.setGeometry(int(width*0.018), int(height*0.3), width -int(width*0.3), int(height*0.65))
+        self.tab_cont.setGeometry(int(width*0.018), int(height*0.28), width -int(width*0.22), int(height*0.67))
         width_f, height_f = self.tab_cont.geometry().width(), self.tab_cont.geometry().height()
 
         #GPS 
-        # width_f,height_f = self.tab_GPS.geometry().width(), self.tab_GPS.geometry().height()
         self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.6*width_f), int(0.9*height_f) - 31)
         self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
 
         # Gráficas 
-        self.altura_frame.setGeometry(int(width_f*0.01), int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.04) - 31)
-        self.volt_frame.setGeometry(int(width_f*0.15), int(height_f*0.1), int(width_f*0.41), height_f - int(height_f*0.2) - 31) 
-        self.temp_frame.setGeometry(int(width_f*0.575), int(height_f*0.1), int(width_f*0.41), height_f - int(height_f*0.2) - 31) 
+        self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.08), height_f - int(height_f*0.04) - 31)
+        self.volt_frame.setGeometry(int(width_f*0.15), int(height_f*0.02), int(width_f*0.46), height_f - int(height_f*0.03) - 31) 
+        self.temp_frame.setGeometry(int(width_f*0.62), int(height_f*0.02), int(width_f*0.365), height_f - int(height_f*0.52)) 
+        self.presion_frame.setGeometry(int(width_f*0.62), int(height_f*0.51), int(width_f*0.365), height_f - int(height_f*0.52) - 31)
+
         width_f, height_f = self.altura_frame.geometry().width(), self.altura_frame.geometry().height()
         self.altura_b.setGeometry(int(width_f*0.45),int(height_f*0.05),int(width_f*0.1), int(height_f*0.75))
         self.altura_frame_name.setGeometry(int(width_f*0.1), int(height_f*0.82), int(width_f*0.8), 30)
@@ -202,17 +186,14 @@ class WidgetsIn(QMainWindow):
         # Datos de los sensores:  
         self.frame_sensores.setGeometry(int(width - width*0.2), int(height*0.3), width - int(width*0.818), int(height*0.65)) 
         width_f, height_f = self.frame_sensores.geometry().width(), self.frame_sensores.geometry().height() 
-        self.presion_label.setGeometry(int(width_f*0.08), int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.pitch_label.setGeometry(int(width_f*0.08), 2*int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.roll_label.setGeometry(int(width_f*0.08), 3*int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.rpm_label.setGeometry(int(width_f*0.08),  4*int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.velocidad_label.setGeometry(int(width_f*0.08), 5*int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.estado_label.setGeometry(int(width_f*0.08), 6*int(height_f/7) - 15, int(width_f*0.37), 30)
-        self.presion.setGeometry(int(width_f*0.55), int(height_f/7) - 15, int(width_f*0.35), 30)
-        self.pitch.setGeometry(int(width_f*0.55), 2*int(height_f/7) - 15, int(width_f*0.35), 30)
-        self.roll.setGeometry(int(width_f*0.55), 3*int(height_f/7) - 15, int(width_f*0.35), 30)
-        self.rpm.setGeometry(int(width_f*0.55), 4*int(height_f/7) - 15, int(width_f*0.35), 30)
-        self.velocidad.setGeometry(int(width_f*0.55), 5*int(height_f/7) - 15, int(width_f*0.35), 30)
-        self.estado.setGeometry(int(width_f*0.55), 6*int(height_f/7) - 15, int(width_f*0.35), 30)
-        
-        
+        self.velocidad_label.setGeometry(int(width_f*0.08), int(height_f/8) - 15, int(width_f*0.37), 30)
+        self.rpm_label.setGeometry(int(width_f*0.08),  2*int(height_f/8) - 15, int(width_f*0.37), 30)
+        self.estado_label.setGeometry(int(width_f*0.08), 3*int(height_f/8) - 15, int(width_f*0.37), 30)
+        self.pitch_label.setGeometry(int(width_f*0.08), 4*int(height_f/8) - 15, int(width_f*0.37), 30)
+        self.roll_label.setGeometry(int(width_f*0.08), 5*int(height_f/8) - 15, int(width_f*0.37), 30)
+        self.velocidad.setGeometry(int(width_f*0.55), 1*int(height_f/8) - 15, int(width_f*0.35), 30)
+        self.rpm.setGeometry(int(width_f*0.55), 2*int(height_f/8) - 15, int(width_f*0.35), 30)
+        self.estado.setGeometry(int(width_f*0.55), 3*int(height_f/8) - 15, int(width_f*0.35), 30)
+        self.pitch.setGeometry(int(width_f*0.55), 4*int(height_f/8) - 15, int(width_f*0.35), 30)
+        self.roll.setGeometry(int(width_f*0.55), 5*int(height_f/8) - 15, int(width_f*0.35), 30)
+

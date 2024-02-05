@@ -112,7 +112,6 @@ class MainWindow(WidgetsIn):
             self.launcht.setText(f"{self.df.iloc[len(self.df.index) - 1]['Mission Time']}")
 
             #Mensajes de sensores 
-            self.presion.setText(f"{self.df.iloc[len(self.df.index) - 1]['Presión']}")
             self.pitch.setText(f"{self.df.iloc[len(self.df.index) - 1]['Pitch']}")
             self.roll.setText(f"{self.df.iloc[len(self.df.index) - 1]['Roll']}")
             self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
@@ -128,8 +127,10 @@ class MainWindow(WidgetsIn):
             self.graf_x += 15
             self.volt.setXRange(self.graf_x - 15, self.graf_x)
             self.temp.setXRange(self.graf_x - 15, self.graf_x)
+            self.presion.setXRange(self.graf_x - 15, self.graf_x)
         self.volt.data.setData(self.tiempo_transcur, self.df['Voltaje'])
         self.temp.data.setData(self.tiempo_transcur, self.df['Temperatura'])
+        self.presion.data.setData(self.tiempo_transcur, self.df['Presión'])
 
         self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
         if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
@@ -157,7 +158,7 @@ class MainWindow(WidgetsIn):
                 self.tiempo_inic = time.time()
                 self.sensores_timer.start(500)
                 self.gps_timer.start(3007)
-                self.graficas_timer.start(73)
+                self.graficas_timer.start(79)
                 self.ActualizarGPS()
                 self.ActualizarSensores() 
                 self.ActualizarGraficas()
@@ -180,7 +181,7 @@ class MainWindow(WidgetsIn):
         else: 
             self.statusBar().showMessage(f"No se pudo guardar el archivo Vuelo_{self.df.iloc[len(self.df.index)-1]['ID']}.csv", 10000)
            
-    def SalirApp(self): #Método para salir de la app, proximamente cerrar el puerto serial antes de salir. 
+    def SalirApp(self): 
         self.DescPort()
         self.app.quit()
 
