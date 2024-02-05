@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusB
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
 from modules.custom_widgets import *
-import pyqtgraph as pg
 import folium
 
 class WidgetsIn(QMainWindow): 
@@ -152,22 +151,10 @@ class WidgetsIn(QMainWindow):
                                     "QProgressBar::chunk {background-color: red;}")    
         self.altura_b.setTextVisible(False)
         self.altura_b.setRange(0,500) 
-        self.altura_frame_name = QFrame(self.altura_frame)
-        self.altura_label = QLabel(self.altura_frame_name) 
-        self.altura = QLabel(self.altura_frame) 
-        self.altura_label.setText("ALTITUD")
-        self.altura_label.setAlignment(Qt.AlignCenter)
-        self.altura.setAlignment(Qt.AlignCenter)
-        self.altura_frame_name.setStyleSheet("background-color: #00BDFF")
-        self.altura_label.setStyleSheet("background: #2A2A2A;"
-                                        "color: white;"
-                                        "font-size: 16px;"
-                                        "font-weight: bold;")
-        self.altura.setStyleSheet("background: #2A2A2A;"
-                                  "color: white;"
-                                  "font-size: 16px;"
-                                  "font-weight: bold;")
-
+        self.altura_frame_name = CustomFrame(self.altura_frame, "#00BDFF")
+        self.altura_label = CustomLabel("ALTITUD",self.altura_frame_name) 
+        self.altura = CustomLabel(parent=self.altura_frame) 
+        
         #Tab GPS
         self.tab_GPS.setStyleSheet("border-radius: 5px;")
         self.gps_frame = QFrame(self.tab_GPS)
@@ -176,8 +163,6 @@ class WidgetsIn(QMainWindow):
         self.gps_w.setHtml(self.maps.get_root().render())
 
         self.gps_frame.setStyleSheet("background: #151515")
-
-
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
