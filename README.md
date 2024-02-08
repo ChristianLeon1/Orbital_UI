@@ -30,4 +30,6 @@ cd ORBITAL_UI
 
 ## USO 
 
+Una vez instalado ejecuta `python3 main.py` 
+
 
