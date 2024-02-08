@@ -10,7 +10,7 @@ import pandas as pd
 import folium 
 from modules.config_widgets import *
 from modules.serial_mod import *
-from PySide6.QtCore import QIODevice, QTimer, QThread, Signal
+from PySide6.QtCore import QIODevice, QTimer
 from PySide6.QtSerialPort import QSerialPort
 from PySide6.QtWidgets import QApplication
 import time

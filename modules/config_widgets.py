@@ -79,7 +79,7 @@ class WidgetsIn(QMainWindow):
         self.id_label = CustomLabel("ID", self.id_frame)
         self.launcht_label = CustomLabel("LAUNCH TIME", self.launcht_frame)
         self.pack_label = CustomLabel("PACKAGE COUNT", self.pack_frame) 
-        self.estado_label = CustomLabel("ESTADO:", self.estado_frame)
+        self.estado_label = CustomLabel("ESTADO", self.estado_frame)
 
         self.hora = CustomLabel(parent=self.frame_data,fsize=20)
         self.id = CustomLabel(parent=self.frame_data,fsize=20)
