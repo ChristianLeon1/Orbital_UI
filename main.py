@@ -10,7 +10,7 @@ import pandas as pd
 import folium 
 from modules.config_widgets import *
 from modules.serial_mod import *
-from PySide6.QtCore import QIODevice, QTimer
+from PySide6.QtCore import QIODevice, QTimer, QThread, Signal
 from PySide6.QtSerialPort import QSerialPort
 from PySide6.QtWidgets import QApplication
 import time
@@ -95,36 +95,36 @@ class MainWindow(WidgetsIn):
             self.statusBar().showMessage(f'No se pudo conectar al puerto {self.port}', 10000)
 
     def ActualizarGPS(self): 
-        if self.flag: 
-            
-            if not (self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud']):
-                self.maps = folium.Map(location= [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']], zoom_start=17)
-                folium.Marker(location=[self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]).add_to(self.maps)
-                self.gps_w.setHtml(self.maps.get_root().render())
-                self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]
+        if not (self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud']):
+            self.maps = folium.Map(location= [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']], zoom_start=17)
+            folium.Marker(location=[self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]).add_to(self.maps)
+            self.gps_w.setHtml(self.maps.get_root().render())
+            self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]
+            self.gps_timer.start(3007)
+
 
     def ActualizarSensores(self): 
-        if self.flag: 
-            #Identificadores
-            self.hora.setText(f"{self.df.iloc[len(self.df.index) - 1]['Hora']}")
-            self.id.setText(f"{self.df.iloc[len(self.df.index) - 1]['ID']}")
-            self.pack.setText(f"{self.df.iloc[len(self.df.index) - 1]['Packet Count']}")
-            self.launcht.setText(f"{self.df.iloc[len(self.df.index) - 1]['Mission Time']}")
+        #Identificadores
+        self.hora.setText(f"{self.df.iloc[len(self.df.index) - 1]['Hora']}")
+        self.id.setText(f"{self.df.iloc[len(self.df.index) - 1]['ID']}")
+        self.pack.setText(f"{self.df.iloc[len(self.df.index) - 1]['Packet Count']}")
+        self.launcht.setText(f"{self.df.iloc[len(self.df.index) - 1]['Mission Time']}")
 
-            #Mensajes de sensores 
-            self.pitch.setText(f"{self.df.iloc[len(self.df.index) - 1]['Pitch']}")
-            self.roll.setText(f"{self.df.iloc[len(self.df.index) - 1]['Roll']}")
-            self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
-            self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
-            #Falta poner la velocidad. 
-            if len(self.df.index) > 20: 
-                velocidad = round((self.df.iloc[len(self.df.index) - 20]['Altitud'] - self.df.iloc[len(self.df.index) - 1]['Altitud']) / (self.tiempo_transcur[len(self.tiempo_transcur) - 20] - self.tiempo_transcur[len(self.tiempo_transcur) - 1]), 2)
-                if velocidad == 0: 
-                    self.velocidad.setText(f"0.0")
-                else: 
-                    self.velocidad.setText(f"{velocidad}")
-            else: 
+        #Mensajes de sensores 
+        self.pitch.setText(f"{self.df.iloc[len(self.df.index) - 1]['Pitch']}")
+        self.roll.setText(f"{self.df.iloc[len(self.df.index) - 1]['Roll']}")
+        self.rpm.setText(f"{self.df.iloc[len(self.df.index) - 1]['Autogiro_vel']}")
+        self.estado.setText(f"{self.df.iloc[len(self.df.index) - 1]['Estado Software']}")
+        #Falta poner la velocidad. 
+        if len(self.df.index) > 20: 
+            velocidad = round((self.df.iloc[len(self.df.index) - 20]['Altitud'] - self.df.iloc[len(self.df.index) - 1]['Altitud']) / (self.tiempo_transcur[len(self.tiempo_transcur) - 20] - self.tiempo_transcur[len(self.tiempo_transcur) - 1]), 2)
+            if velocidad == 0: 
                 self.velocidad.setText(f"0.0")
+            else: 
+                self.velocidad.setText(f"{velocidad}")
+        else: 
+            self.velocidad.setText(f"0.0")
+        self.sensores_timer.start(500)
 
     def ActualizarGraficas(self):
         if not self.tiempo_transcur[len((self.df.index)) - 1] < self.graf_x: 
@@ -141,6 +141,7 @@ class MainWindow(WidgetsIn):
             self.altura_b.setValue(int(round(self.df.iloc[len(self.df.index) - 1]['Altitud'])))
         else: 
             self.altura_b.setValue(500)
+        self.graficas_timer.start(79)
             
     def LeerDatos(self): 
         if not self.ser.canReadLine(): 
@@ -160,9 +161,6 @@ class MainWindow(WidgetsIn):
             if not self.flag: 
                 self.flag = True
                 self.tiempo_inic = time.time()
-                self.sensores_timer.start(500)
-                self.gps_timer.start(3007)
-                self.graficas_timer.start(79)
                 self.ActualizarGPS()
                 self.ActualizarSensores() 
                 self.ActualizarGraficas()
