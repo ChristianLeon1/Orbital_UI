@@ -5,7 +5,7 @@
 
 from PySide6.QtCore import QSize, Qt 
 from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
-from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QProgressBar 
+from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QLineEdit 
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
 from modules.custom_widgets import *
@@ -46,11 +46,20 @@ class WidgetsIn(QMainWindow):
         self.baud_opts.setCurrentIndex(-1)
         self.serial_opts = QComboBox() 
         label_serial = QLabel("Puertos Disponibles: ")
-
+        
+        #Agregar ubicación del objetivo
+        label_pos = QLabel("Ubicación del objetivo: ")
+        self.latitud = QLineEdit()
+        self.longitud = QLineEdit()
+        self.latitud.setFixedWidth(60)
+        self.longitud.setFixedWidth(60)
+        self.latitud.setStyleSheet("background: #212121")
+        self.longitud.setStyleSheet("background: #212121")
         # Botones 
         self.boton_actualizar = QAction("Actualizar Puertos")
         self.boton_conec_ser = QAction("Conectar")
         self.boton_descon = QAction("Desconectar")
+        self.boton_posicion = QAction("Actualizar")
         self.boton_conec_ser.setEnabled(False)
         self.boton_descon.setEnabled(False)
         
@@ -63,7 +72,12 @@ class WidgetsIn(QMainWindow):
         self.toolbar.addAction(self.boton_actualizar)
         self.toolbar.addSeparator()
         self.toolbar.addAction(self.boton_conec_ser) 
-        self.toolbar.addAction(self.boton_descon)
+        self.toolbar.addAction(self.boton_descon) 
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(label_pos)
+        self.toolbar.addWidget(self.latitud)
+        self.toolbar.addWidget(self.longitud)
+        self.toolbar.addAction(self.boton_posicion)
 
         # Status Bar 
         self.setStatusBar(QStatusBar(self))
@@ -109,7 +123,9 @@ class WidgetsIn(QMainWindow):
 
         #Tab Graficas
         self.tab_graphs.setStyleSheet("border-radius: 5px;")
-        self.altura_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
+        self.altura_cp = AltitudeWidget(parent=self.tab_graphs, label="ALTITUD CP")
+        self.altura_cs = AltitudeWidget(parent=self.tab_graphs, label="ALTITUD CS")
+        # self.altura_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
         self.temp_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
         self.volt_frame = CustomFrame(parent=self.tab_graphs, background="#151515") 
         self.presion_frame = CustomFrame(parent=self.tab_graphs, background="#151515")
@@ -127,27 +143,6 @@ class WidgetsIn(QMainWindow):
         self.temp.setYRange(0,30)
         self.presion.setYRange(75000,80000)
 
-        # Barra de altitud.  
-        self.altura_b = QProgressBar(self.altura_frame)
-        self.altura_b.setOrientation(Qt.Vertical)
-        self.altura_b.setStyleSheet("QProgressBar{border: 2px solid white;"
-                                    "border-radius: 1px;"
-                                    "text-align: center;}"
-                                    "QProgressBar::chunk {background-color: red;}")     
-        self.altura_b.setTextVisible(False)
-        self.altura_b.setRange(0,500) 
-        self.altura_frame_name = CustomFrame(self.altura_frame, "#00BDFF")
-        self.altura_label = CustomLabel("ALTITUD",self.altura_frame_name) 
-        self.altura = CustomLabel(parent=self.altura_frame) 
-        self.piso_marca = CustomFrame(self.altura_frame, "white")
-        self.autogiro_marca = CustomFrame(self.altura_frame, "white")
-        self.drone_marca = CustomFrame(self.altura_frame, "white")
-        self.max_marca = CustomFrame(self.altura_frame, "white")
-        self.piso_label = CustomLabel("0 m", self.altura_frame, 12, "#151515",Qt.AlignLeft) 
-        self.autogiro_label = CustomLabel("200 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
-        self.drone_label = CustomLabel("450 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
-        self.max_label = CustomLabel("500 m", self.altura_frame, 12, "#151515", Qt.AlignLeft)
-        
         #Tab GPS
         self.tab_GPS.setStyleSheet("border-radius: 5px;")
         self.gps_frame = QFrame(self.tab_GPS)
@@ -170,25 +165,16 @@ class WidgetsIn(QMainWindow):
         self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
 
         # Gráficas 
-        self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.11), height_f - int(height_f*0.03) - 31)
-        self.volt_frame.setGeometry(int(width_f*0.15), int(height_f*0.02), int(width_f*0.46), height_f - int(height_f*0.03) - 31) 
-        self.temp_frame.setGeometry(int(width_f*0.62), int(height_f*0.02), int(width_f*0.365), height_f - int(height_f*0.52)) 
-        self.presion_frame.setGeometry(int(width_f*0.62), int(height_f*0.51), int(width_f*0.365), height_f - int(height_f*0.52) - 31)
-
-        width_f, height_f = self.altura_frame.geometry().width(), self.altura_frame.geometry().height()
-        self.altura_b.setGeometry(int(width_f*0.3),int(height_f*0.05),int(width_f*0.1), int(height_f*0.73))
-        self.altura_frame_name.setGeometry(int(width_f*0.1), int(height_f*0.82), int(width_f*0.8), 30)
-        self.altura_label.setGeometry(3,3,self.altura_frame_name.geometry().width() - 3, 28)
-        self.altura.setGeometry(int(width_f*0.1), int(height_f*0.9), int(width_f*0.8), 30)
-        self.piso_marca.setGeometry(int(width_f*0.3), int(height_f*0.78) - 2, int(width_f*0.25), 2)
-        self.autogiro_marca.setGeometry(int(width_f*0.3), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.6) - 3, int(width_f*0.25), 2)
-        self.drone_marca.setGeometry(int(width_f*0.3), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.1) - 3, int(width_f*0.25), 2)
-        self.max_marca.setGeometry(int(width_f*0.3), int(height_f*0.05), int(width_f*0.25), 2)
-        self.piso_label.setGeometry(int(width_f*0.565), int(height_f*0.78) - 9, int(width_f*0.24), int(16))
-        self.autogiro_label.setGeometry(int(width_f*0.565), int(height_f*0.05) + int(self.altura_b.geometry().height()*0.6) - 10, int(width_f*0.24), int(16))
-        self.drone_label.setGeometry(int(width_f*0.565),  int(height_f*0.05) + int(self.altura_b.geometry().height()*0.1)  - 9, int(width_f*0.24), int(16))
-        self.max_label.setGeometry(int(width_f*0.565), int(height_f*0.05) - 8, int(width_f*0.239), int(16))
-    
+        # self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.20), height_f - int(height_f*0.03) - 31)
+        self.altura_cp.frame.setGeometry(0, int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)
+        self.altura_cs.frame.setGeometry(int(width*0.1), int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)
+        self.presion_frame.setGeometry(int(width_f*(0.158 + 0.105)), int(height_f*0.02), int(width_f*(0.46 - 0.05)), height_f - int(height_f*0.03) - 31) 
+        self.temp_frame.setGeometry(int(width_f*(0.62 + 0.06)), int(height_f*0.02), int(width_f*(0.365 - 0.06)), height_f - int(height_f*0.52)) 
+        self.volt_frame.setGeometry(int(width_f*(0.62 + 0.06)), int(height_f*0.51), int(width_f*(0.365 - 0.06)), height_f - int(height_f*0.52) - 31)
+        
+        self.altura_cp.Resize()
+        self.altura_cs.Resize()
+               
         # Identificadores: 
         self.frame_data.setGeometry(int(width*0.018), int(height*0.08), width - int(width*0.036), int(height*0.185))
         width_f, height_f = self.frame_data.geometry().width(), self.frame_data.geometry().height() 

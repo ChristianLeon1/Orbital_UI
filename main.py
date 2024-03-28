@@ -24,7 +24,7 @@ class MainWindow(WidgetsIn):
         self.app = app 
         self.tiempo_transcur = [0]
 
-        self.df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Presión':[],'Temperatura':[],'Voltaje':[],'Hora':[],'Latitud':[],'Longitud':[],'AltitudGPS':[],'GPS SATS':[],'Pitch':[],'Roll':[],'Autogiro_vel':[],'Estado Software':[]})
+        self.df = pd.DataFrame({'ID':[],'Mission Time':[],'Packet Count':[],'Altitud':[],'Presión':[],'Temperatura':[],'Voltaje':[],'Hora':[],'Latitud 1':[],'Longitud 1':[],'GPS SATS':[],'Pitch':[],'Roll':[],'Autogiro_vel':[],'Estado Software':[],'Latitud 2':[],'Longitud 2':[], 'Altitud 2':[]})
 
         #Inicialización de variables 
         self.baud_rate = None
@@ -34,6 +34,7 @@ class MainWindow(WidgetsIn):
         self.graficas_timer = QTimer(self)
         self.flag = False
         self.posicion = [0,0]
+        self.posicion_2 = [0,0]
         self.graf_x = 15
 
         self.IncluirWidgetsConfig()
@@ -95,13 +96,14 @@ class MainWindow(WidgetsIn):
             self.statusBar().showMessage(f'No se pudo conectar al puerto {self.port}', 10000)
 
     def ActualizarGPS(self): 
-        if not (self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud']):
-            self.maps = folium.Map(location= [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']], zoom_start=17)
-            folium.Marker(location=[self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]).add_to(self.maps)
+        if not ((self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud 1'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud 1']) or (self.posicion_2[0] == self.df.iloc[len(self.df.index) - 1]['Latitud 2'] and self.posicion_2[1] == self.df.iloc[len(self.df.index) - 1]['Longitud 2'])):
+            self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud 1'], self.df.iloc[len(self.df.index) - 1]['Longitud 1']]
+            self.posicion_2 = [self.df.iloc[len(self.df.index) - 1]['Latitud 2'], self.df.iloc[len(self.df.index) - 1]['Longitud 2']]
+            self.maps = folium.Map(location= [self.posicion[0], self.posicion[1]], zoom_start=18)
+            folium.CircleMarker(location=[self.posicion[0], self.posicion[1]], radius=10, color="red", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            folium.CircleMarker(location=[self.posicion_2[0], self.posicion_2[1]], radius=10, color="#466DFF", fill=True, border=True, opacity=0.7).add_to(self.maps)
             self.gps_w.setHtml(self.maps.get_root().render())
-            self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud'], self.df.iloc[len(self.df.index) - 1]['Longitud']]
             self.gps_timer.start(3007)
-
 
     def ActualizarSensores(self): 
         #Identificadores
@@ -136,11 +138,11 @@ class MainWindow(WidgetsIn):
         self.temp.data.setData(self.tiempo_transcur, self.df['Temperatura'])
         self.presion.data.setData(self.tiempo_transcur, self.df['Presión'])
 
-        self.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
+        self.altura_cp.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
         if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
-            self.altura_b.setValue(int(round(self.df.iloc[len(self.df.index) - 1]['Altitud'])))
+            self.altura_cp.bar.setValue(int(round(self.df.iloc[len(self.df.index) - 1]['Altitud'])))
         else: 
-            self.altura_b.setValue(500)
+            self.altura_cp.bar.setValue(500)
         self.graficas_timer.start(79)
             
     def LeerDatos(self): 
