@@ -36,7 +36,10 @@ class MainWindow(WidgetsIn):
         self.posicion = [0,0]
         self.posicion_2 = [0,0]
         self.graf_x = 15
-
+        self.altitud_calib = 0 
+        self.pos_objetivo = [0,0]
+        self.flag_objetivo = False
+        self.ajuste_altura = 0
         self.IncluirWidgetsConfig()
         #Configuración serial 
         self.ser = QSerialPort()        
@@ -61,6 +64,27 @@ class MainWindow(WidgetsIn):
         self.gps_timer.timeout.connect(self.ActualizarGPS)        
         self.graficas_timer.timeout.connect(self.ActualizarGraficas)
 
+        #Calibración 
+        self.boton_posicion.triggered.connect(self.ObjetivoPos)
+
+
+
+    def CalibAltura(self): 
+        pass 
+
+    def ObjetivoPos(self): 
+        try: 
+            latitud = float(self.latitud.text())
+            longitud = float(self.longitud.text()) 
+            self.pos_objetivo = [latitud, longitud]
+            self.flag_objetivo = True 
+            self.statusBar().showMessage(f'Se guardo la ubicación del objetivo correctamente: {self.pos_objetivo}', 10000)
+            self.maps = folium.Map(location = self.pos_objetivo, zoom_start=16)
+            folium.CircleMarker(location=self.pos_objetivo, radius=10, color="#FFE000", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            self.gps_w.setHtml(self.maps.get_root().render())
+        except: 
+            self.statusBar().showMessage(f'No se ingreso correctamente las coordenadas del objetivo. [{self.latitud.text()}, {self.longitud.text()}]', 10000)
+
     def GuardarBaudRate(self,text):
         self.baud_rate = int(text)
         if self.baud_rate != None and self.serial_opts.currentIndex() != -1: 
@@ -84,6 +108,8 @@ class MainWindow(WidgetsIn):
 
     def ConectarPort(self):  
         if self.baud_rate != None and self.port != None: 
+            self.boton_calib_altura.setEnabled(False)
+            self.boton_posicion.setEnabled(False)
             self.ser.setPortName(self.port)
             self.ser.setBaudRate(self.baud_rate)
             if self.ser.open(QIODevice.ReadWrite): 
@@ -99,9 +125,13 @@ class MainWindow(WidgetsIn):
         if not ((self.posicion[0] == self.df.iloc[len(self.df.index) - 1]['Latitud 1'] and self.posicion[1] == self.df.iloc[len(self.df.index) - 1]['Longitud 1']) or (self.posicion_2[0] == self.df.iloc[len(self.df.index) - 1]['Latitud 2'] and self.posicion_2[1] == self.df.iloc[len(self.df.index) - 1]['Longitud 2'])):
             self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud 1'], self.df.iloc[len(self.df.index) - 1]['Longitud 1']]
             self.posicion_2 = [self.df.iloc[len(self.df.index) - 1]['Latitud 2'], self.df.iloc[len(self.df.index) - 1]['Longitud 2']]
-            self.maps = folium.Map(location= [self.posicion[0], self.posicion[1]], zoom_start=18)
-            folium.CircleMarker(location=[self.posicion[0], self.posicion[1]], radius=10, color="red", fill=True, border=True, opacity=0.7).add_to(self.maps)
-            folium.CircleMarker(location=[self.posicion_2[0], self.posicion_2[1]], radius=10, color="#466DFF", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            if self.flag_objetivo: 
+                self.maps = folium.Map(location=self.pos_objetivo, zoom_start=16)
+                folium.CircleMarker(location=self.pos_objetivo, radius=10, color="#FFE000", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            else:
+                self.maps = folium.Map(location=self.posicion, zoom_start=16)
+            folium.CircleMarker(location=self.posicion, radius=10, color="red", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            folium.CircleMarker(location=self.posicion_2, radius=10, color="#466DFF", fill=True, border=True, opacity=0.7).add_to(self.maps)
             self.gps_w.setHtml(self.maps.get_root().render())
             self.gps_timer.start(3007)
 
@@ -139,10 +169,17 @@ class MainWindow(WidgetsIn):
         self.presion.data.setData(self.tiempo_transcur, self.df['Presión'])
 
         self.altura_cp.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
-        if self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
-            self.altura_cp.bar.setValue(int(round(self.df.iloc[len(self.df.index) - 1]['Altitud'])))
+        if self.df.iloc[len(self.df.index) - 1]['Altitud'] - self.ajuste_altura <= 500:
+            self.altura_cp.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud']) - self.ajuste_altura)
         else: 
             self.altura_cp.bar.setValue(500)
+
+        self.altura_cs.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud 2']} m")
+        if self.df.iloc[len(self.df.index) - 1]['Altitud 2'] - self.ajuste_altura <= 500:
+            self.altura_cs.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud 2']) - self.ajuste_altura)
+        else: 
+            self.altura_cs.bar.setValue(500)
+
         self.graficas_timer.start(79)
             
     def LeerDatos(self): 
@@ -174,6 +211,8 @@ class MainWindow(WidgetsIn):
     def DescPort(self): 
         self.boton_conec_ser.setEnabled(True)
         self.boton_descon.setEnabled(False)
+        self.boton_posicion.setEnabled(True)
+        self.boton_calib_altura.setEnabled(True)
         if self.ser.isOpen: 
             self.ser.close()
             self.statusBar().showMessage(f'Se desconecto correctamente el puerto {self.port}', 10000)

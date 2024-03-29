@@ -51,15 +51,19 @@ class WidgetsIn(QMainWindow):
         label_pos = QLabel("Ubicación del objetivo: ")
         self.latitud = QLineEdit()
         self.longitud = QLineEdit()
+        self.altura = QLineEdit()
         self.latitud.setFixedWidth(60)
         self.longitud.setFixedWidth(60)
+        self.altura.setFixedWidth(60)
         self.latitud.setStyleSheet("background: #212121")
         self.longitud.setStyleSheet("background: #212121")
+        self.altura.setStyleSheet("background: #212121")
         # Botones 
         self.boton_actualizar = QAction("Actualizar Puertos")
         self.boton_conec_ser = QAction("Conectar")
         self.boton_descon = QAction("Desconectar")
         self.boton_posicion = QAction("Actualizar")
+        self.boton_calib_altura = QAction("Calibrar Altura")
         self.boton_conec_ser.setEnabled(False)
         self.boton_descon.setEnabled(False)
         
@@ -78,6 +82,9 @@ class WidgetsIn(QMainWindow):
         self.toolbar.addWidget(self.latitud)
         self.toolbar.addWidget(self.longitud)
         self.toolbar.addAction(self.boton_posicion)
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(self.altura)
+        self.toolbar.addAction(self.boton_calib_altura)
 
         # Status Bar 
         self.setStatusBar(QStatusBar(self))
