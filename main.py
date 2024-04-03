@@ -12,7 +12,7 @@ from modules.config_widgets import *
 from modules.serial_mod import *
 from PySide6.QtCore import QIODevice, QTimer
 from PySide6.QtSerialPort import QSerialPort
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMessageBox
 import time
 # USAR threading para actualizar el puerto serial
 
@@ -36,7 +36,6 @@ class MainWindow(WidgetsIn):
         self.posicion = [0,0]
         self.posicion_2 = [0,0]
         self.graf_x = 15
-        self.altitud_calib = 0 
         self.pos_objetivo = [0,0]
         self.flag_objetivo = False
         self.ajuste_altura = 0
@@ -66,11 +65,16 @@ class MainWindow(WidgetsIn):
 
         #Calibración 
         self.boton_posicion.triggered.connect(self.ObjetivoPos)
+        self.boton_calib_altura.triggered.connect(self.CalibAltura)
 
 
 
     def CalibAltura(self): 
-        pass 
+        try:
+            self.ajuste_altura = float(self.altura.text())
+            self.statusBar().showMessage(f'Se guardo correctamente la Calibración de la altura: {self.ajuste_altura}', 10000)
+        except: 
+            self.statusBar().showMessage(f'No se ingreso un dato válido para calibrar la altura: {self.altura.text()}', 10000)
 
     def ObjetivoPos(self): 
         try: 
@@ -169,14 +173,14 @@ class MainWindow(WidgetsIn):
         self.presion.data.setData(self.tiempo_transcur, self.df['Presión'])
 
         self.altura_cp.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud']} m")
-        if self.df.iloc[len(self.df.index) - 1]['Altitud'] - self.ajuste_altura <= 500:
-            self.altura_cp.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud']) - self.ajuste_altura)
+        if 0 <=  self.df.iloc[len(self.df.index) - 1]['Altitud'] or  self.df.iloc[len(self.df.index) - 1]['Altitud'] <= 500:
+            self.altura_cp.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud']))
         else: 
             self.altura_cp.bar.setValue(500)
 
         self.altura_cs.altura.setText(f"{self.df.iloc[len(self.df.index) - 1]['Altitud 2']} m")
-        if self.df.iloc[len(self.df.index) - 1]['Altitud 2'] - self.ajuste_altura <= 500:
-            self.altura_cs.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud 2']) - self.ajuste_altura)
+        if 0 <=  self.df.iloc[len(self.df.index) - 1]['Altitud 2'] or  self.df.iloc[len(self.df.index) - 1]['Altitud 2'] <= 500:
+            self.altura_cs.bar.setValue(int(self.df.iloc[len(self.df.index) - 1]['Altitud 2']))
         else: 
             self.altura_cs.bar.setValue(500)
 
@@ -195,6 +199,8 @@ class MainWindow(WidgetsIn):
                         new_row[i] = float(new_row[i])
                     except: 
                         pass 
+                if i == 3 or i == len(new_row) - 1: 
+                    new_row[i] = round(new_row[i] - self.ajuste_altura, 2) 
             self.df.loc[len(self.df.index)] = new_row  
 
             if not self.flag: 
@@ -227,6 +233,21 @@ class MainWindow(WidgetsIn):
     def SalirApp(self): 
         self.DescPort()
         self.app.quit()
+
+    def closeEvent(self, event):
+        flag = self.MensajeSalida()
+        if flag == QMessageBox.Yes:
+            self.GuardarCSV()
+        self.DescPort()
+
+
+    def MensajeSalida(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Salir")
+        msg_box.setText("¿Desea guardar los datos de la misión?")
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return msg_box.exec()
+
 
 if __name__ == "__main__": 
     app = QApplication(sys.argv)
