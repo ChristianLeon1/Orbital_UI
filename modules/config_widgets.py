@@ -4,7 +4,7 @@
 # AÑO: 2024 CREADOR: Christian Yael Ramírez León
 
 from PySide6.QtCore import QSize, Qt 
-from PySide6.QtGui import QAction, QKeySequence, QResizeEvent, Qt
+from PySide6.QtGui import QAction, QKeySequence, QPixmap, QResizeEvent, Qt
 from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QLineEdit 
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
@@ -15,7 +15,8 @@ class WidgetsIn(QMainWindow):
     def IncluirWidgetsConfig(self): 
 
         #Ajustes app 
-        # self.setWindowIcon()   #Falta agregar el ícono 
+        self.logo = QPixmap("Logo.png")
+        self.setWindowIcon(self.logo)
         self.setWindowTitle("Estación Terrena ORBITAL")
         self.setObjectName("Estación Terrena ORBITAL")
         self.setStyleSheet("background-color: black;"
@@ -101,6 +102,9 @@ class WidgetsIn(QMainWindow):
         self.launcht_label = CustomLabel("LAUNCH TIME", self.launcht_frame)
         self.pack_label = CustomLabel("PACKAGE COUNT", self.pack_frame) 
         self.estado_label = CustomLabel("ESTADO", self.estado_frame)
+        self.logo_label = QLabel(self.frame_data)
+        self.logo_label.setPixmap(self.logo)
+        self.logo_label.setScaledContents(True)
 
         self.hora = CustomLabel(parent=self.frame_data,fsize=20)
         self.id = CustomLabel(parent=self.frame_data,fsize=20)
@@ -152,12 +156,11 @@ class WidgetsIn(QMainWindow):
 
         #Tab GPS
         self.tab_GPS.setStyleSheet("border-radius: 5px;")
-        self.gps_frame = QFrame(self.tab_GPS)
+        self.gps_frame = CustomFrame(self.tab_GPS,"#151515")
         self.gps_w = QWebEngineView(self.gps_frame)
         self.maps = folium.Map(location = [19.4284, -99.1276], zoom_start=4)
         self.gps_w.setHtml(self.maps.get_root().render())
-
-        self.gps_frame.setStyleSheet("background: #151515")
+        self.gps_frame_datos = CustomFrame(self.tab_GPS,"#151515")
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
@@ -170,9 +173,9 @@ class WidgetsIn(QMainWindow):
         #GPS 
         self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.6*width_f), int(0.9*height_f) - 31)
         self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
+        self.gps_frame_datos.setGeometry(int(0.63*width_f), int(0.01*height_f), int(0.3*width_f), int(0.9*height_f) - 31)
 
         # Gráficas 
-        # self.altura_frame.setGeometry(0, int(height_f*0.02), int(width*0.20), height_f - int(height_f*0.03) - 31)
         self.altura_cp.frame.setGeometry(0, int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)
         self.altura_cs.frame.setGeometry(int(width*0.1), int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)
         self.presion_frame.setGeometry(int(width_f*(0.158 + 0.105)), int(height_f*0.02), int(width_f*(0.46 - 0.05)), height_f - int(height_f*0.03) - 31) 
@@ -185,6 +188,7 @@ class WidgetsIn(QMainWindow):
         # Identificadores: 
         self.frame_data.setGeometry(int(width*0.018), int(height*0.08), width - int(width*0.036), int(height*0.185))
         width_f, height_f = self.frame_data.geometry().width(), self.frame_data.geometry().height() 
+        self.logo_label.setGeometry(int(width_f*0.35), int(height_f*0.2), int(width_f*0.2), 90)
         self.hora_frame.setGeometry(int(width_f*0.04), int(height_f*0.2), 200, 30) 
         self.launcht_frame.setGeometry(200 + int(width_f*0.06), int(height_f*0.2), 200, 30) 
         self.pack_frame.setGeometry(width_f - 400 - int(width_f*0.06), int(height_f*0.2), 200, 30) 

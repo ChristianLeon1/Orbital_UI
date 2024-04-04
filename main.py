@@ -14,8 +14,7 @@ from PySide6.QtCore import QIODevice, QTimer
 from PySide6.QtSerialPort import QSerialPort
 from PySide6.QtWidgets import QApplication, QMessageBox
 import time
-# USAR threading para actualizar el puerto serial
-
+# USAR threading para actualizar el puerto serial 
 class MainWindow(WidgetsIn): 
 
     def __init__(self) -> None: 
@@ -228,10 +227,9 @@ class MainWindow(WidgetsIn):
             self.df.to_csv(f"Vuelo_{self.df.iloc[len(self.df.index)-1]['ID']}.csv", header =True)
             self.statusBar().showMessage(f"Se guardo correctamente el archivo Vuelo_{self.df.iloc[len(self.df.index)-1]['ID']}.csv", 10000)
         else: 
-            self.statusBar().showMessage(f"No se pudo guardar el archivo Vuelo_{self.df.iloc[len(self.df.index)-1]['ID']}.csv", 10000)
+            self.statusBar().showMessage(f"No hay ningun archivo por guardar.", 10000)
            
     def SalirApp(self): 
-        self.DescPort()
         self.app.quit()
 
     def closeEvent(self, event):
