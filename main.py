@@ -10,6 +10,7 @@ import pandas as pd
 import folium 
 from modules.config_widgets import *
 from modules.serial_mod import *
+from modules.distancia_coord import *
 from PySide6.QtCore import QIODevice, QTimer
 from PySide6.QtSerialPort import QSerialPort
 from PySide6.QtWidgets import QApplication, QMessageBox
@@ -129,12 +130,19 @@ class MainWindow(WidgetsIn):
             self.posicion = [self.df.iloc[len(self.df.index) - 1]['Latitud 1'], self.df.iloc[len(self.df.index) - 1]['Longitud 1']]
             self.posicion_2 = [self.df.iloc[len(self.df.index) - 1]['Latitud 2'], self.df.iloc[len(self.df.index) - 1]['Longitud 2']]
             if self.flag_objetivo: 
-                self.maps = folium.Map(location=self.pos_objetivo, zoom_start=16)
-                folium.CircleMarker(location=self.pos_objetivo, radius=10, color="#FFE000", fill=True, border=True, opacity=0.7).add_to(self.maps)
+                self.maps = folium.Map(location=self.pos_objetivo, zoom_start=18)
+                folium.CircleMarker(location=self.pos_objetivo, radius=6, color="#FFE000", fill=True, border=True, opacity=0.7).add_to(self.maps)
+                self.dis_cp_obj.setText("SIN OBJ")
+                self.dis_cs_obj.setText("SIN OBJ")
+                self.dis_cs_obj.setText(f"{Distancia(self.posicion, self.pos_objetivo)}")
+                self.dis_cp_obj.setText(f"{Distancia(self.posicion_2, self.pos_objetivo)}")
             else:
-                self.maps = folium.Map(location=self.posicion, zoom_start=16)
-            folium.CircleMarker(location=self.posicion, radius=10, color="red", fill=True, border=True, opacity=0.7).add_to(self.maps)
-            folium.CircleMarker(location=self.posicion_2, radius=10, color="#466DFF", fill=True, border=True, opacity=0.7).add_to(self.maps)
+                self.maps = folium.Map(location=self.posicion, zoom_start=18)
+                self.dis_cp_obj.setText("SIN OBJ")
+                self.dis_cs_obj.setText("SIN OBJ")
+                folium.CircleMarker(location=self.posicion, radius=6, color="red", fill=True, border=True, opacity=0.7).add_to(self.maps)
+            self.dis_cp_cs.setText(f"{Distancia(self.posicion, self.posicion_2)}")                       #Falta terminar 
+            folium.CircleMarker(location=self.posicion_2, radius=6, color="#466DFF", fill=True, border=True, opacity=0.7).add_to(self.maps)
             self.gps_w.setHtml(self.maps.get_root().render())
             self.gps_timer.start(3007)
 

@@ -161,6 +161,15 @@ class WidgetsIn(QMainWindow):
         self.maps = folium.Map(location = [19.4284, -99.1276], zoom_start=4)
         self.gps_w.setHtml(self.maps.get_root().render())
         self.gps_frame_datos = CustomFrame(self.tab_GPS,"#151515")
+        self.distancia_cp_cs = CustomLabel("DISTANCIA CP - CS:", self.gps_frame_datos, 20, "#151515", Qt.AlignLeft)
+        self.distancia_cp_obj = CustomLabel("DISTANCIA CP - OBJ:", self.gps_frame_datos, 20, "#151515", Qt.AlignLeft)
+        self.distancia_cs_obj = CustomLabel("DISTANCIA CS - OBJ:", self.gps_frame_datos, 20, "#151515", Qt.AlignLeft)
+        self.dis_cp_cs = CustomLabel(parent=self.gps_frame_datos)
+        self.dis_cp_obj = CustomLabel(parent=self.gps_frame_datos)
+        self.dis_cs_obj = CustomLabel(parent=self.gps_frame_datos)
+
+
+
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
@@ -171,9 +180,9 @@ class WidgetsIn(QMainWindow):
         width_f, height_f = self.tab_cont.geometry().width(), self.tab_cont.geometry().height()
 
         #GPS 
-        self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.6*width_f), int(0.9*height_f) - 31)
-        self.gps_w.setGeometry(int(0.05*self.gps_frame.geometry().width()), int(0.05*self.gps_frame.geometry().height()), int(0.9*self.gps_frame.geometry().width()), int(0.9*self.gps_frame.geometry().height()))
-        self.gps_frame_datos.setGeometry(int(0.63*width_f), int(0.01*height_f), int(0.3*width_f), int(0.9*height_f) - 31)
+        self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.65*width_f), int(0.9*height_f) - 31)
+        self.gps_w.setGeometry(int(0.02*self.gps_frame.geometry().width()), int(0.03*self.gps_frame.geometry().height()), int(0.96*self.gps_frame.geometry().width()), int(0.94*self.gps_frame.geometry().height()))
+        self.gps_frame_datos.setGeometry(int(0.67*width_f), int(0.01*height_f), int(0.29*width_f), int(0.9*height_f) - 31)
 
         # Gráficas 
         self.altura_cp.frame.setGeometry(0, int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)
@@ -184,7 +193,16 @@ class WidgetsIn(QMainWindow):
         
         self.altura_cp.Resize()
         self.altura_cs.Resize()
-               
+        
+        # Distancia del GPS 
+        width_f, height_f = self.gps_frame_datos.geometry().width(), self.gps_frame_datos.geometry().height()
+        self.distancia_cp_cs.setGeometry(int(width_f*0.05), int(height_f/8) - 15, int(width_f*0.5), 30)
+        self.distancia_cp_obj.setGeometry(int(width_f*0.05), 2*int(height_f/8) - 15, int(width_f*0.5), 30)
+        self.distancia_cs_obj.setGeometry(int(width_f*0.05), 3*int(height_f/8) - 15, int(width_f*0.5), 30)
+        self.dis_cp_cs.setGeometry(int(width_f*0.6), int(height_f/8) - 15, int(width_f*0.32), 30)
+        self.dis_cp_obj.setGeometry(int(width_f*0.6), 2*int(height_f/8) - 15, int(width_f*0.32), 30)
+        self.dis_cs_obj.setGeometry(int(width_f*0.6), 3*int(height_f/8) - 15, int(width_f*0.32), 30)
+
         # Identificadores: 
         self.frame_data.setGeometry(int(width*0.018), int(height*0.08), width - int(width*0.036), int(height*0.185))
         width_f, height_f = self.frame_data.geometry().width(), self.frame_data.geometry().height() 
