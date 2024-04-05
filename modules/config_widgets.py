@@ -15,7 +15,7 @@ class WidgetsIn(QMainWindow):
     def IncluirWidgetsConfig(self): 
 
         #Ajustes app 
-        self.logo = QPixmap("Logo.png")
+        self.logo = QPixmap("images/Logo.png")
         self.setWindowIcon(self.logo)
         self.setWindowTitle("Estación Terrena ORBITAL")
         self.setObjectName("Estación Terrena ORBITAL")
