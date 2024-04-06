@@ -167,9 +167,9 @@ class WidgetsIn(QMainWindow):
         self.dis_cp_cs = CustomLabel(parent=self.gps_frame_datos)
         self.dis_cp_obj = CustomLabel(parent=self.gps_frame_datos)
         self.dis_cs_obj = CustomLabel(parent=self.gps_frame_datos)
-
-
-
+        self.leyenda = QLabel(self.gps_frame)
+        self.leyenda.setPixmap(QPixmap("images/Leyenda.png"))
+        self.leyenda.setScaledContents(True)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
@@ -182,6 +182,7 @@ class WidgetsIn(QMainWindow):
         #GPS 
         self.gps_frame.setGeometry(int(0.01*width_f), int(0.01*height_f), int(0.65*width_f), int(0.9*height_f) - 31)
         self.gps_w.setGeometry(int(0.02*self.gps_frame.geometry().width()), int(0.03*self.gps_frame.geometry().height()), int(0.96*self.gps_frame.geometry().width()), int(0.94*self.gps_frame.geometry().height()))
+        self.leyenda.setGeometry(int(0.98*self.gps_frame.geometry().width() - 200), int(0.97*self.gps_frame.geometry().height() - 90), 180, 70)
         self.gps_frame_datos.setGeometry(int(0.67*width_f), int(0.01*height_f), int(0.29*width_f), int(0.9*height_f) - 31)
 
         # Gráficas 
