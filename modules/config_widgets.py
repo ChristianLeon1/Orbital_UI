@@ -5,7 +5,7 @@
 
 from PySide6.QtCore import QSize, Qt 
 from PySide6.QtGui import QAction, QKeySequence, QPixmap, QResizeEvent, Qt
-from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QLineEdit 
+from PySide6.QtWidgets import QMainWindow, QToolBar, QComboBox, QLabel, QStatusBar, QFrame, QTabWidget, QVBoxLayout, QLineEdit, QTextEdit, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from modules.tab_style import ColorTab
 from modules.custom_widgets import *
@@ -65,6 +65,8 @@ class WidgetsIn(QMainWindow):
         self.boton_descon = QAction("Desconectar")
         self.boton_posicion = QAction("Actualizar")
         self.boton_calib_altura = QAction("Calibrar Altura")
+        self.boton_act_servo = QAction("Activar Servo")
+        self.boton_des_servo = QAction("Desactivar Servo")
         self.boton_conec_ser.setEnabled(False)
         self.boton_descon.setEnabled(False)
         
@@ -86,6 +88,9 @@ class WidgetsIn(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addWidget(self.altura)
         self.toolbar.addAction(self.boton_calib_altura)
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(self.boton_act_servo)
+        self.toolbar.addAction(self.boton_des_servo)
 
         # Status Bar 
         self.setStatusBar(QStatusBar(self))
@@ -128,9 +133,11 @@ class WidgetsIn(QMainWindow):
         self.tab_cont = QTabWidget(self) 
         self.tab_graphs = QFrame()
         self.tab_GPS = QFrame() 
+        self.tab_serial_monitor = QFrame()
         self.tab_cont.setStyleSheet(ColorTab())
         self.tab_cont.addTab(self.tab_graphs, "Sensores")
         self.tab_cont.addTab(self.tab_GPS,"GPS")
+        self.tab_cont.addTab(self.tab_serial_monitor,"Monitor Serial")
 
         #Tab Graficas
         self.tab_graphs.setStyleSheet("border-radius: 5px;")
@@ -150,8 +157,8 @@ class WidgetsIn(QMainWindow):
         self.volt_container.addWidget(self.volt)
         self.temp_container.addWidget(self.temp)
         self.presion_container.addWidget(self.presion)
-        self.volt.setYRange(0,10)
-        self.temp.setYRange(0,30)
+        self.volt.setYRange(0,5)
+        self.temp.setYRange(0,40)
         self.presion.setYRange(75000,80000)
 
         #Tab GPS
@@ -171,6 +178,30 @@ class WidgetsIn(QMainWindow):
         self.leyenda.setPixmap(QPixmap("images/Leyenda.png"))
         self.leyenda.setScaledContents(True)
 
+        #Tab monitor serial
+        self.tab_serial_monitor.setStyleSheet("border-radius: 5px;")
+        self.serial_mon_frame = CustomFrame(self.tab_serial_monitor,"#151515")
+        self.serial_monitor = QTextEdit(self.serial_mon_frame)
+        self.limpiar_ser_mon = QPushButton(self.serial_mon_frame)
+        self.limpiar_ser_mon.setText("Limpiar")
+        self.datos_a_serial = QLineEdit(self.serial_mon_frame)
+        self.datos_a_serial.setPlaceholderText("Mensaje (Enter para enviar el mensaje)")
+        self.datos_a_serial.setEnabled(False)
+        self.serial_monitor.setReadOnly(True)
+        self.serial_monitor.setStyleSheet("background: #050505;"
+                                          "border: 1px solid #5A5C5F;"
+                                          "border-radius: 5px;"
+                                          )
+        self.limpiar_ser_mon.setStyleSheet("background: #111111;"
+                                          "border: 1px solid #5A5C5F;"
+                                          "border-radius: 5px;"
+                                          )
+        self.datos_a_serial.setStyleSheet("background: #1D1D1D;"
+                                        "border: 1px solid #5A5C5F;"
+                                        "border-radius: 5px;"
+                                        )
+
+
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.geometry().width()
         height = self.geometry().height()
@@ -184,6 +215,12 @@ class WidgetsIn(QMainWindow):
         self.gps_w.setGeometry(int(0.02*self.gps_frame.geometry().width()), int(0.03*self.gps_frame.geometry().height()), int(0.96*self.gps_frame.geometry().width()), int(0.94*self.gps_frame.geometry().height()))
         self.leyenda.setGeometry(int(0.98*self.gps_frame.geometry().width() - 200), int(0.97*self.gps_frame.geometry().height() - 90), 180, 70)
         self.gps_frame_datos.setGeometry(int(0.67*width_f), int(0.01*height_f), int(0.29*width_f), int(0.9*height_f) - 31)
+        
+        #Monitor Serial
+        self.serial_mon_frame.setGeometry(int(0.01*width_f), int(0.05*height_f), int(0.95*width_f), int(0.9*height_f) - 31)
+        self.serial_monitor.setGeometry(int(self.serial_mon_frame.geometry().width()*0.01), int(self.serial_mon_frame.geometry().height()*0.05), int(self.serial_mon_frame.geometry().width()*0.98), int(self.serial_mon_frame.geometry().height()*0.85))
+        self.limpiar_ser_mon.setGeometry(int(self.serial_mon_frame.geometry().width()*0.92), int(self.serial_mon_frame.geometry().height()*0.92), int(self.serial_mon_frame.geometry().width()*0.07), int(self.serial_mon_frame.geometry().height()*0.06))
+        self.datos_a_serial.setGeometry(int(self.serial_mon_frame.geometry().width()*0.01), int(self.serial_mon_frame.geometry().height()*0.92), int(self.serial_mon_frame.geometry().width()*0.90), int(self.serial_mon_frame.geometry().height()*0.06))
 
         # Gráficas 
         self.altura_cp.frame.setGeometry(0, int(height_f*0.02), int(width*0.09), height_f - int(height_f*0.03) - 31)

@@ -15,4 +15,3 @@ def PuertoDisponible():
     for i in range(0,len(port)): 
         port[i] = port[i].strip()
     return port 
-
