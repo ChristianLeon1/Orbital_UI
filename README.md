@@ -17,7 +17,7 @@ Programa para estación terrena desarrollada para la competencia de CANSAT PEU e
 
 Clonar el repositorio en un virtual environment the python e instalar las dependencias.
 
-Usuarios de UNIX y macOS: 
+Usuarios de sistemas operativos basados en LINUX y macOS: 
 
 ```
 python3 -m venv ORBITAL 
